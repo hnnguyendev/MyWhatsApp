@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		04DD9D5F2CC92D7100EE11BF /* MyWhatsApp */ = {
+		04D3B87B2CCCF4720056634E /* MyWhatsApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MyWhatsApp;
 			sourceTree = "<group>";
@@ -32,8 +32,8 @@
 		04DD9D542CC92D7100EE11BF = {
 			isa = PBXGroup;
 			children = (
-				04DD9D5F2CC92D7100EE11BF /* MyWhatsApp */,
 				04DD9D5E2CC92D7100EE11BF /* Products */,
+				04D3B87B2CCCF4720056634E /* MyWhatsApp */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,7 +61,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				04DD9D5F2CC92D7100EE11BF /* MyWhatsApp */,
+				04D3B87B2CCCF4720056634E /* MyWhatsApp */,
 			);
 			name = MyWhatsApp;
 			packageProductDependencies = (
