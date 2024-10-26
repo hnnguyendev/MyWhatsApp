@@ -56,8 +56,6 @@ extension ChannelsTabScreen {
             cameraButton()
             newChatButton()
         }
-        
-        
     }
     
     private func aiButton() -> some View {

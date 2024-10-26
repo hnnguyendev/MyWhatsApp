@@ -18,8 +18,6 @@ struct ChannelItemView: View {
                 lastMessagePreview()
             }
         }
-        
-        
     }
     
     private func titleTextView() -> some View {
