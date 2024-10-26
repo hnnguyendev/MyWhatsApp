@@ -22,22 +22,22 @@ struct MainTabView: View {
             CallsTabScreen()
                 .tabItem {
                     Image(systemName: Tab.calls.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.calls.title)
                 }
             CommunitiesTabScreen()
                 .tabItem {
                     Image(systemName: Tab.communities.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.communities.title)
                 }
-            placeholderItemView("Chats")
+            ChannelsTabScreen()
                 .tabItem {
                     Image(systemName: Tab.chats.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.chats.title)
                 }
             placeholderItemView("Settings")
                 .tabItem {
                     Image(systemName: Tab.settings.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.settings.title)
                 }
         }
     }
