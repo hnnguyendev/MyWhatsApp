@@ -5,6 +5,7 @@
 //  Created by Nguyen Huu Nghia on 26/10/24.
 //
 
+import Foundation
 import SwiftUI
 
 struct SettingsItem {
