@@ -10,6 +10,9 @@ import SwiftUI
 struct MainTabView: View {
     init() {
         makeTabBarOpaque()
+        /// Move MainTabView above MyWhatsAppApp and add this logic - better thumb icon audio slider BubbleAudioView
+        let thumbImage = UIImage(systemName: "circle.fill")
+        UISlider.appearance().setThumbImage(thumbImage, for: .normal)
     }
     
     var body: some View {
