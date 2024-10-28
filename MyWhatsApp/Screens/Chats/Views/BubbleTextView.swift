@@ -14,14 +14,14 @@ struct BubbleTextView: View {
             Text("Hello, World! How are you doing")
                 .padding(10)
                 .background(item.backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .applyTail(item.direction)
             
             timestampTextView()
         }
         .shadow(color: Color(.systemGray3).opacity(0.1), radius: 5, x: 0, y: 20)
         .frame(maxWidth: .infinity, alignment: item.alignment)
-        .padding(.leading, item.direction == .received ? 5 : 100)
+        .padding(.leading, item.direction == .sent ? 100 : 5)
         .padding(.trailing, item.direction == .sent ? 5 : 100)
     }
     
@@ -47,6 +47,7 @@ struct BubbleTextView: View {
         BubbleTextView(item: .sentPlaceholder)
         BubbleTextView(item: .recievedPlaceholder)
     }
-    .background(Color.gray.opacity(0.1))
+    .frame(maxWidth: .infinity)
+    .background(Color.gray.opacity(0.4))
 }
     

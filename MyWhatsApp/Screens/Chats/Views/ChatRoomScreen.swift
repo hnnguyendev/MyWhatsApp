@@ -27,6 +27,7 @@ struct ChatRoomScreen: View {
                 leadingNavItem()
                 trailingNavItem()
             }
+            .navigationBarTitleDisplayMode(.inline) /// Hidden redundant white space on top ChatRoomScreen
             .safeAreaInset(edge: .bottom) {
                 TextInputArea()
             }

@@ -11,7 +11,7 @@ struct BubbleTailView: View {
     var direction: MessageDirection
     
     private var backgroundColor: Color {
-        return direction == .received ? .bubbleWhite : .bubbleGreen
+        return direction == .sent ? .bubbleGreen : .bubbleWhite
     }
     
     var body: some View {
