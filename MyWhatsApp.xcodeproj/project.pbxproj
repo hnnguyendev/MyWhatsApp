@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		047B0B1C2CD129B7003F1D21 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 047B0B1B2CD129B7003F1D21 /* FirebaseAuth */; };
+		047B0B1E2CD129B7003F1D21 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 047B0B1D2CD129B7003F1D21 /* FirebaseDatabase */; };
+		047B0B202CD129B7003F1D21 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 047B0B1F2CD129B7003F1D21 /* FirebaseDatabaseSwift */; };
+		047B0B222CD129B7003F1D21 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 047B0B212CD129B7003F1D21 /* FirebaseMessaging */; };
+		047B0B242CD129B7003F1D21 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 047B0B232CD129B7003F1D21 /* FirebaseStorage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		04DD9D5D2CC92D7100EE11BF /* MyWhatsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyWhatsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +31,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				047B0B222CD129B7003F1D21 /* FirebaseMessaging in Frameworks */,
+				047B0B202CD129B7003F1D21 /* FirebaseDatabaseSwift in Frameworks */,
+				047B0B1E2CD129B7003F1D21 /* FirebaseDatabase in Frameworks */,
+				047B0B242CD129B7003F1D21 /* FirebaseStorage in Frameworks */,
+				047B0B1C2CD129B7003F1D21 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +78,11 @@
 			);
 			name = MyWhatsApp;
 			packageProductDependencies = (
+				047B0B1B2CD129B7003F1D21 /* FirebaseAuth */,
+				047B0B1D2CD129B7003F1D21 /* FirebaseDatabase */,
+				047B0B1F2CD129B7003F1D21 /* FirebaseDatabaseSwift */,
+				047B0B212CD129B7003F1D21 /* FirebaseMessaging */,
+				047B0B232CD129B7003F1D21 /* FirebaseStorage */,
 			);
 			productName = MyWhatsApp;
 			productReference = 04DD9D5D2CC92D7100EE11BF /* MyWhatsApp.app */;
@@ -94,6 +112,9 @@
 			);
 			mainGroup = 04DD9D542CC92D7100EE11BF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 04DD9D5E2CC92D7100EE11BF /* Products */;
 			projectDirPath = "";
@@ -326,6 +347,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.22.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		047B0B1B2CD129B7003F1D21 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		047B0B1D2CD129B7003F1D21 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		047B0B1F2CD129B7003F1D21 /* FirebaseDatabaseSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabaseSwift;
+		};
+		047B0B212CD129B7003F1D21 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		047B0B232CD129B7003F1D21 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 047B0B1A2CD129B7003F1D21 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 04DD9D552CC92D7100EE11BF /* Project object */;
 }
