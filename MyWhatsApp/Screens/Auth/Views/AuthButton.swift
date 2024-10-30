@@ -10,7 +10,7 @@ import SwiftUI
 struct AuthButton: View {
     let title: String
     let onTap: () -> Void
-    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.isEnabled) private var isEnabled /// Using for modifier .disable() button
     
     private var backgroundColor: Color {
         return isEnabled ? Color.white : Color.white.opacity(0.3)
