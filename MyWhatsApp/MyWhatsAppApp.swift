@@ -15,6 +15,11 @@ import Firebase
 /// FirebaseMessaging
 /// FirebaseStorage
 
+/// Config Firebase console
+/// Config in project here
+/// Config Firebase Authentication
+/// Create Firebase database: Build -> Realtime Database -> set rules
+
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
