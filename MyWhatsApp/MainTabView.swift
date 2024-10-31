@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct MainTabView: View {
-    init() {
+    private let currentUser: UserItem
+    
+    init(_ currentUser: UserItem) {
+        self.currentUser = currentUser /// Dependency Injection
         makeTabBarOpaque()
         /// Move MainTabView above MyWhatsAppApp and add this logic - better thumb icon audio slider BubbleAudioView
         let thumbImage = UIImage(systemName: "circle.fill")
@@ -94,5 +97,5 @@ extension MainTabView {
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(.placeholder)
 }

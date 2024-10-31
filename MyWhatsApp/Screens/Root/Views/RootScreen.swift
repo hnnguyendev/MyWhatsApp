@@ -17,7 +17,7 @@ struct RootScreen: View {
                 .controlSize(.large)
             
         case .loggedIn(let loggedInUser):
-            MainTabView()
+            MainTabView(loggedInUser)
             
         case .loggedOut:
             LoginScreen()

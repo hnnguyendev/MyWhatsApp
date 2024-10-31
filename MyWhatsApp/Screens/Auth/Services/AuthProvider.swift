@@ -10,6 +10,8 @@ import Combine
 import FirebaseAuth
 import FirebaseDatabase
 
+// Flow: login() result is successful -> call fetchCurrentUserInfo() and fetch current user successful -> trigger AuthState -> trigger RootScreen
+
 enum AuthState {
     case pending, loggedIn(UserItem), loggedOut
 }
@@ -17,6 +19,7 @@ enum AuthState {
 enum AuthError {
     case accountCreationFailed(_ description: String)
     case failedToSaveUserInfo(_ description: String)
+    case emailLoginFailed(_ description: String)
 }
 
 extension AuthError: LocalizedError {
@@ -25,6 +28,8 @@ extension AuthError: LocalizedError {
         case .accountCreationFailed(let description):
             return description
         case .failedToSaveUserInfo(let description):
+            return description
+        case .emailLoginFailed(let description):
             return description
         }
     }
@@ -46,6 +51,7 @@ protocol AuthProvider {
     
 }
 
+// MARK: AuthManager is a Singleton so there's only shared instance there's only one single instance across our entire application
 final class AuthManager: AuthProvider {
     private init() {
         Task {
@@ -58,7 +64,14 @@ final class AuthManager: AuthProvider {
     var authState = CurrentValueSubject<AuthState, Never>(.pending)
     
     func login(with email: String, and password: String) async throws {
-        
+        do {
+            let authResult = try await Auth.auth().signIn(withEmail: email, password: password)
+            fetchCurrentUserInfo()
+            print("🔐 Successfully Signed In \(authResult.user.email ?? "")")
+        } catch {
+            print("❌ Failed to Sign Into the Account with \(email)")
+            throw AuthError.emailLoginFailed(error.localizedDescription)
+        }
     }
     
     func autoLogin() async {
