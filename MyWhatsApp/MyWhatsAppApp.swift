@@ -18,7 +18,7 @@ import Firebase
 /// Config Firebase console
 /// Config in project here
 /// Config Firebase Authentication
-/// Create Firebase database: Build -> Realtime Database -> set rules
+/// Create Firebase database: Build -> Realtime Database -> set rules, Build -> Storage -> set rules
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
