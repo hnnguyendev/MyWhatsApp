@@ -5,6 +5,28 @@
 //  Created by Nguyen Huu Nghia on 29/10/24.
 //
 
+/**
+ SecureField(type.placeholder, text: $text)
+ 
+ Unable to simultaneously satisfy constraints.
+     Probably at least one of the constraints in the following list is one you don't want.
+     Try this:
+         (1) look at each constraint and try to figure out which you don't expect;
+         (2) find the code that added the unwanted constraint or constraints and fix it.
+ (
+     "<NSLayoutConstraint:0x60000219a4e0 'accessoryView.bottom' _UIRemoteKeyboardPlaceholderView:0x1193942e0.bottom == _UIKBCompatInputView:0x119306880.top   (active)>",
+     "<NSLayoutConstraint:0x60000219b2a0 'assistantHeight' SystemInputAssistantView.height == 45   (active, names: SystemInputAssistantView:0x104929b40 )>",
+     "<NSLayoutConstraint:0x600002177890 'assistantView.bottom' SystemInputAssistantView.bottom == _UIKBCompatInputView:0x119306880.top   (active, names: SystemInputAssistantView:0x104929b40 )>",
+     "<NSLayoutConstraint:0x60000219ba70 'assistantView.top' V:[_UIRemoteKeyboardPlaceholderView:0x1193942e0]-(0)-[SystemInputAssistantView]   (active, names: SystemInputAssistantView:0x104929b40 )>"
+ )
+
+ Will attempt to recover by breaking constraint
+ <NSLayoutConstraint:0x60000219ba70 'assistantView.top' V:[_UIRemoteKeyboardPlaceholderView:0x1193942e0]-(0)-[SystemInputAssistantView]   (active, names: SystemInputAssistantView:0x104929b40 )>
+
+ Make a symbolic breakpoint at UIViewAlertForUnsatisfiableConstraints to catch this in the debugger.
+ The methods in the UIConstraintBasedLayoutDebugging category on UIView listed in <UIKitCore/UIView.h> may also be helpful.
+ */
+
 import SwiftUI
 
 struct AuthTextField: View {
