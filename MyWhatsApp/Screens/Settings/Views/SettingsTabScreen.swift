@@ -37,7 +37,7 @@ struct SettingsTabScreen: View {
             .navigationTitle("Settings")
             .searchable(text: $searchText)
             .toolbar {
-                leadingNavItem()
+                trailingNavItem()
             }
         }
     }
@@ -45,13 +45,14 @@ struct SettingsTabScreen: View {
 
 extension SettingsTabScreen {
     @ToolbarContentBuilder
-    private func leadingNavItem() -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+    private func trailingNavItem() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
             Button("Sign Out") {
                 Task {
                     try? await AuthManager.shared.logout()
                 }
             }
+            .font(.system(size: 14))
             .foregroundStyle(.red)
         }
     }
