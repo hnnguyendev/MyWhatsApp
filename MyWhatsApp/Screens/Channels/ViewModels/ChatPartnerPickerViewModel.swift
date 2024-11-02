@@ -8,8 +8,12 @@
 import Foundation
 
 enum ChannelCreationRoute {
-    case addGroupChatMembers
+    case groupPartnerPicker
     case setUpGroupChat
+}
+
+enum ChannelConstants {
+    static let maxGroupParticipants = 12
 }
 
 final class ChatPartnerPickerViewModel: ObservableObject {
@@ -20,8 +24,12 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         return !selectedChatPartners.isEmpty
     }
     
+    var disableNextButton: Bool {
+        return selectedChatPartners.isEmpty
+    }
+    
     // MARK: - Public Methods
-    func handleItenSelection(_ user: UserItem) {
+    func handleItemSelection(_ user: UserItem) {
         if isUserSelected(user) {
             guard let index = selectedChatPartners.firstIndex(where: { $0.uid == user.uid }) else { return }
             selectedChatPartners.remove(at: index)
