@@ -22,7 +22,7 @@ struct UserItem: Identifiable, Hashable, Decodable {
         return bio ?? "Hey there! I am using MyWhatsApp."
     }
     
-    static let placeholder = UserItem(uid: "1", username: "name", email: "email@email.com") /// Fix MainTabView preview
+    static let placeholder = UserItem(uid: "1", username: "Motki Bubu", email: "motki.bubu@gmail.com") /// Fix MainTabView preview
 }
 
 extension UserItem {
