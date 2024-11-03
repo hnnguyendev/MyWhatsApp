@@ -18,5 +18,16 @@ final class RootScreenModel: ObservableObject {
             .sink {[weak self] lastestAuthState in
                 self?.authState = lastestAuthState
             }
+        
+//        AuthManager.testAccounts.forEach { email in
+//            registerTestAccount(with: email)
+//        }
+    }
+    // MARK: Init test user
+    private func registerTestAccount(with email: String) {
+//        Task {
+//            let username = email.replacingOccurrences(of: "@test.com", with: "")
+//            try? await AuthManager.shared.createAccount(for: username, with: email, and: "Hnnguyen")
+//        }
     }
 }

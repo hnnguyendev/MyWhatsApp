@@ -134,6 +134,60 @@ extension AuthManager {
         } withCancel: { error in
             print("Failed to get current user info")
         }
-
     }
+}
+
+extension AuthManager {
+    static let testAccounts: [String] = [
+        "Hnnguyen1@test.com",
+        "Hnnguyen2@test.com",
+        "Hnnguyen3@test.com",
+        "Hnnguyen4@test.com",
+        "Hnnguyen5@test.com",
+        "Hnnguyen6@test.com",
+        "Hnnguyen7@test.com",
+        "Hnnguyen8@test.com",
+        "Hnnguyen9@test.com",
+        "Hnnguyen10@test.com",
+        "Hnnguyen11@test.com",
+        "Hnnguyen12@test.com",
+        "Hnnguyen13@test.com",
+        "Hnnguyen14@test.com",
+        "Hnnguyen15@test.com",
+        "Hnnguyen16@test.com",
+        "Hnnguyen17@test.com",
+        "Hnnguyen18@test.com",
+        "Hnnguyen19@test.com",
+        "Hnnguyen20@test.com",
+        "Hnnguyen21@test.com",
+        "Hnnguyen22@test.com",
+        "Hnnguyen23@test.com",
+        "Hnnguyen24@test.com",
+        "Hnnguyen25@test.com",
+        "Hnnguyen26@test.com",
+        "Hnnguyen27@test.com",
+        "Hnnguyen28@test.com",
+        "Hnnguyen29@test.com",
+        "Hnnguyen30@test.com",
+        "Hnnguyen31@test.com",
+        "Hnnguyen32@test.com",
+        "Hnnguyen33@test.com",
+        "Hnnguyen34@test.com",
+        "Hnnguyen35@test.com",
+        "Hnnguyen36@test.com",
+        "Hnnguyen37@test.com",
+        "Hnnguyen38@test.com",
+        "Hnnguyen39@test.com",
+        "Hnnguyen40@test.com",
+        "Hnnguyen41@test.com",
+        "Hnnguyen42@test.com",
+        "Hnnguyen43@test.com",
+        "Hnnguyen44@test.com",
+        "Hnnguyen45@test.com",
+        "Hnnguyen46@test.com",
+        "Hnnguyen47@test.com",
+        "Hnnguyen48@test.com",
+        "Hnnguyen49@test.com",
+        "Hnnguyen50@test.com"
+    ]
 }
