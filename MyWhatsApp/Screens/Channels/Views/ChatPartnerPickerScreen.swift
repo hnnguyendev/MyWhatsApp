@@ -16,10 +16,10 @@ struct ChatPartnerPickerScreen: View {
         NavigationStack(path: $viewModel.navStack) {
             List {
                 ForEach(ChatPartnerPickerOption.allCases) { item in
-                    HeaderItemView(item: item)
-                        .onTapGesture {
-                            viewModel.navStack.append(.groupPartnerPicker)
-                        }
+                    HeaderItemView(item: item) {
+                        guard item == ChatPartnerPickerOption.newGroup else { return }
+                        viewModel.navStack.append(.groupPartnerPicker)
+                    }
                 }
                 
                 Section {
@@ -101,10 +101,11 @@ extension ChatPartnerPickerScreen {
 extension ChatPartnerPickerScreen {
     private struct HeaderItemView: View {
         let item: ChatPartnerPickerOption
+        let onTapHandler: () -> Void
         
         var body: some View {
             Button {
-                
+                onTapHandler()
             } label: {
                 buttonBody()
             }

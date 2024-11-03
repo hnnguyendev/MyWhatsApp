@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Firebase
 
 enum ChannelCreationRoute {
     case groupPartnerPicker
@@ -45,8 +46,14 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     // MARK: - Public Methods
     func fetchUsers() async {
         do {
-            let userNode = try await UserService.paginateUsers(lastCusor: lastCursor, pageSize: 5)
-            self.users.append(contentsOf: userNode.users)
+            let userNode = try await UserService.paginateUsers(lastCursor: lastCursor, pageSize: 5)
+            var fetchedUsers = userNode.users
+            
+            /// Remove the currently loged in user
+            guard let currentUid = Auth.auth().currentUser?.uid else { return }
+            fetchedUsers = fetchedUsers.filter { $0.uid != currentUid }
+            
+            self.users.append(contentsOf: fetchedUsers)
             self.lastCursor = userNode.currentCursor
             print("lastCursor: \(lastCursor ?? "") \(users.count)")
         } catch {
