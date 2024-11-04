@@ -12,6 +12,8 @@ struct ChatPartnerPickerScreen: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChatPartnerPickerViewModel()
     
+    var onCreate: (_ newChannel: ChannelItem) -> Void
+    
     var body: some View {
         NavigationStack(path: $viewModel.navStack) {
             List {
@@ -25,6 +27,9 @@ struct ChatPartnerPickerScreen: View {
                 Section {
                     ForEach(viewModel.users) { user in
                         ChatPartnerRowView(user: user)
+                            .onTapGesture {
+                                onCreate(ChannelItem.placeholder)
+                            }
                     }
                 } header: {
                     Text("Contacts on MyWhatsApp")
@@ -154,5 +159,7 @@ enum ChatPartnerPickerOption: String, CaseIterable, Identifiable {
 }
 
 #Preview {
-    ChatPartnerPickerScreen()
+    ChatPartnerPickerScreen { channel in
+        
+    }
 }
