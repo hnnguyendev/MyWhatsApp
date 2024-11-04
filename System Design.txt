@@ -1,0 +1,22 @@
+Channel (have a list of metadata and data)
+	channelId: Random String
+	admins: [uid, uid, uid, ...]
+	members: [uid, uid, uid, uid, ...]
+	creationDate: TimeInterval
+	membersCount: Int
+	
+Channel-Messages
+	channelId
+		messageId
+			message: { text, timestamp, sender, … }
+
+User-Direct-Messages
+	userId
+		channelId1: true
+		channelId2: true
+	
+Direct Channels: unique, 1:1 communication with just 2 members
+Group Channels: non-unique, 3 to 12 members
+
+- Denormalization (mean: It's okay to have duplicate data so long as it helps us): Optimize for Read operations, sacrificing Write (ưu tiên tốc độ, hi sinh một chút dung lượng)
+- Storage is cheap in Firebase 
