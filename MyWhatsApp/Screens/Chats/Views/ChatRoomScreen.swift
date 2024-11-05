@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ChatRoomScreen: View {
+    let channel: ChannelItem
+    
     var body: some View {
 //        ScrollView {
 //            LazyVStack {
@@ -42,7 +44,7 @@ extension ChatRoomScreen {
                 Circle()
                     .frame(width: 35, height: 35)
                 
-                Text("Motki Bubu")
+                Text(channel.title)
                     .bold()
             }
         }
@@ -68,6 +70,6 @@ extension ChatRoomScreen {
 
 #Preview {
     NavigationStack {
-        ChatRoomScreen()
+        ChatRoomScreen(channel: .placeholder)
     }
 }

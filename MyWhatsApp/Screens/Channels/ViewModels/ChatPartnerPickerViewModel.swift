@@ -42,6 +42,10 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         return !users.isEmpty
     }
     
+    private var isDirectChannel: Bool {
+        return selectedChatPartners.count == 1
+    }
+    
     init() {
         Task {
             await fetchUsers()
@@ -116,13 +120,21 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         memberUids.forEach { userId in
             /// Keeping an index of the channel that a specific user belongs to
             FirebaseConstants.UserChannelsRef.child(userId).child(channelId).setValue(true)
-            
-            /// This is the node that make sure that a specific direct channel is unique.
-            /// Because before we're going to create any user direct channels we're going to first validate that channelId doesn't belong or doesn't exist inside of this index.
-            FirebaseConstants.UserDirectChannelsRef.child(userId).child(channelId).setValue(true)
         }
         
-        let newChannelItem = ChannelItem(channelDict)
+        /// This is the node that make sure that a specific direct channel is unique.
+        /// Because before we're going to create any user direct channels we're going to first validate that channelId doesn't belong or doesn't exist inside of this index.
+        if isDirectChannel {
+            let chatPartner = selectedChatPartners[0]
+
+            /// user-direct-channels/uid/uid/[channelId]
+            /// Before we create any direct channel in the future we're first going to check this path using those two uid properties and if those uid exist we know a user already has a direct channel with that specific user
+            FirebaseConstants.UserDirectChannelsRef.child(currentUid).child(chatPartner.uid).setValue([channelId: true])
+            FirebaseConstants.UserDirectChannelsRef.child(chatPartner.uid).child(currentUid).setValue([channelId: true])
+        }
+        
+        var newChannelItem = ChannelItem(channelDict)
+        newChannelItem.members = selectedChatPartners
         return .success(newChannelItem)
     }
 }
