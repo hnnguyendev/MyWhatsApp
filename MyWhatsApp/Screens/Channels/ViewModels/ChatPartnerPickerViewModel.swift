@@ -17,6 +17,11 @@ enum ChannelConstants {
     static let maxGroupParticipants = 12
 }
 
+enum ChannelCreationError: Error {
+    case noChatPartner
+    case failedToCreateUniqueIds
+}
+
 @MainActor
 final class ChatPartnerPickerViewModel: ObservableObject {
     @Published var navStack = [ChannelCreationRoute]()
@@ -78,4 +83,46 @@ final class ChatPartnerPickerViewModel: ObservableObject {
 //    func buildDirectChannel() async -> Result<ChannelItem, Error> {
 //        
 //    }
+    
+    func createChannel(_ channelName: String?) -> Result<ChannelItem, Error> {
+        guard !selectedChatPartners.isEmpty else { return .failure(ChannelCreationError.noChatPartner) }
+        
+        guard
+            let channelId = FirebaseConstants.ChannelsRef.childByAutoId().key,
+            let currentUid = Auth.auth().currentUser?.uid
+        else { return .failure(ChannelCreationError.failedToCreateUniqueIds) }
+        
+        let timestamp = Date().timeIntervalSince1970
+        
+        var memberUids = selectedChatPartners.compactMap { $0.uid }
+        memberUids.append(currentUid)
+        
+        var channelDict: [String: Any] = [
+            .id: channelId,
+            .creationDate: timestamp,
+            .lastMessage: "",
+            .lastMessageTimestamp: timestamp,
+            .adminUids: [currentUid],
+            .memberUids: memberUids,
+            .membersCount: memberUids.count
+        ]
+        
+        if let channelName = channelName, !channelName.isEmptyOrWhiteSpace {
+            channelDict[.name] = channelName
+        }
+        
+        FirebaseConstants.ChannelsRef.child(channelId).setValue(channelDict)
+        
+        memberUids.forEach { userId in
+            /// Keeping an index of the channel that a specific user belongs to
+            FirebaseConstants.UserChannelsRef.child(userId).child(channelId).setValue(true)
+            
+            /// This is the node that make sure that a specific direct channel is unique.
+            /// Because before we're going to create any user direct channels we're going to first validate that channelId doesn't belong or doesn't exist inside of this index.
+            FirebaseConstants.UserDirectChannelsRef.child(userId).child(channelId).setValue(true)
+        }
+        
+        let newChannelItem = ChannelItem(channelDict)
+        return .success(newChannelItem)
+    }
 }
