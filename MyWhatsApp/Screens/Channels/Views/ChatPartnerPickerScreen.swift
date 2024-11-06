@@ -12,6 +12,7 @@ struct ChatPartnerPickerScreen: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ChatPartnerPickerViewModel()
     
+    /// Pass this method to ChannelsTabScreen
     var onCreate: (_ newChannel: ChannelItem) -> Void
     
     var body: some View {
@@ -28,14 +29,7 @@ struct ChatPartnerPickerScreen: View {
                     ForEach(viewModel.users) { user in
                         ChatPartnerRowView(user: user)
                             .onTapGesture {
-                                viewModel.selectedChatPartners.append(user)
-                                let channelCreated = viewModel.createChannel(nil)
-                                switch channelCreated {
-                                case .success(let channelItem):
-                                    onCreate(channelItem)
-                                case .failure(let error):
-                                    print("Failed to create channel: \(error.localizedDescription)")
-                                }
+                                viewModel.createDirectChannel(user, completion: onCreate)
                             }
                     }
                 } header: {
@@ -61,6 +55,10 @@ struct ChatPartnerPickerScreen: View {
             .toolbar {
                 trailingNavItem()
             }
+            /// Remove all selectedChatPartners when select members in GroupPartnerPickerScreen then back to ChatPartnerPickerScreen
+            .onAppear {
+                viewModel.deSelectAllChatPartners()
+            }
         }
     }
     
@@ -81,7 +79,10 @@ extension ChatPartnerPickerScreen {
         case .groupPartnerPicker:
             GroupPartnerPickerScreen(viewModel: viewModel)
         case .setUpGroupChat:
-            NewGroupSetUpScreen(viewModel: viewModel)
+            /// We're going to pass in the onCreate above here
+            /// This NewGroupSetUpScreen is returning an onCreate closure when we create a new group
+            /// We're done creating a Group Channel dismiss the screen and push us to the new screen
+            NewGroupSetUpScreen(viewModel: viewModel, onCreate: onCreate)
         }
     }
 }
