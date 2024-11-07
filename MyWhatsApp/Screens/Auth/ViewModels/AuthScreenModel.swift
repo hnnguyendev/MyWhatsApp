@@ -22,7 +22,7 @@ final class AuthScreenModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var username = ""
-    @Published var errorState: (showError: Bool, errorMessage: String) = (false, "Opps") /// Tuple
+    @Published var errorState: (showError: Bool, errorMessage: String) = (false, "Opps!") /// Tuple
     
     // MARK: Computed Properties
     var disableLoginButton: Bool {

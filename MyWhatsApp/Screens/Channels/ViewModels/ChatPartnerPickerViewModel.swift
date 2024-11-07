@@ -27,6 +27,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     @Published var navStack = [ChannelCreationRoute]()
     @Published var selectedChatPartners = [UserItem]()
     @Published private(set) var users = [UserItem]()
+    @Published var errorState: (showError: Bool, errorMessage: String) = (false, "Opps!")
     
     private var lastCursor: String?
     
@@ -81,6 +82,11 @@ final class ChatPartnerPickerViewModel: ObservableObject {
             guard let index = selectedChatPartners.firstIndex(where: { $0.uid == user.uid }) else { return }
             selectedChatPartners.remove(at: index)
         } else {
+            guard selectedChatPartners.count < ChannelConstants.maxGroupParticipants else {
+                let errorMessage = "Sorry, we only allow a maximum of \(ChannelConstants.maxGroupParticipants) participants in a group chat."
+                showError(errorMessage)
+                return
+            }
             selectedChatPartners.append(user)
         }
     }
@@ -92,13 +98,40 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     
     func createDirectChannel(_ chatPartner: UserItem, completion: @escaping (_ newChannel: ChannelItem) -> Void) {
         selectedChatPartners.append(chatPartner)
-        let channelCreation = createChannel(nil)
-        switch channelCreation {
-        case .success(let channel):
-            completion(channel)
-        case .failure(let error):
-            print("Failed to create a Direct Channel: \(error.localizedDescription)")
+        
+        Task {
+            // If existing DM, get the channel
+            if let channelId = await verifyIfDirectChannelExists(with: chatPartner.uid) {
+                let snapshot = try await FirebaseConstants.ChannelsRef.child(channelId).getData()
+                var channelDict = snapshot.value as! [String: Any]
+                var directChannel = ChannelItem(channelDict)
+                directChannel.members = selectedChatPartners
+                /// is an escaping closure
+                completion(directChannel)
+            } else {
+                /// Create a new DM with the user
+                let channelCreation = createChannel(nil)
+                switch channelCreation {
+                case .success(let channel):
+                    completion(channel)
+                case .failure(let error):
+                    showError("Sorry! Something Went Wrong While We Were Trying to Setup Your Chat")
+                    print("Failed to create a Direct Channel: \(error.localizedDescription)")
+                }
+            }
         }
+    }
+    
+    typealias ChannelId = String
+    private func verifyIfDirectChannelExists(with chatParnerId: String) async -> ChannelId? {
+        guard let currentUid = Auth.auth().currentUser?.uid,
+              let snapshot = try? await FirebaseConstants.UserDirectChannelsRef.child(currentUid).child(chatParnerId).getData(),
+                snapshot.exists()
+        else { return nil }
+        
+        let userDirectChannelDict = snapshot.value as! [String: Bool]
+        let channelId = userDirectChannelDict.compactMap { $0.key }.first
+        return channelId
     }
     
     func createGroupChannel(_ groupName: String?, completion: @escaping (_ newChannel: ChannelItem) -> Void) {
@@ -107,6 +140,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         case .success(let channel):
             completion(channel)
         case .failure(let error):
+            showError("Sorry! Something Went Wrong While We Were Trying to Setup Your Group Chat")
             print("Failed to create a Group Channel: \(error.localizedDescription)")
         }
     }
@@ -170,5 +204,10 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         var newChannelItem = ChannelItem(channelDict)
         newChannelItem.members = selectedChatPartners
         return .success(newChannelItem)
+    }
+    
+    private func showError(_ errorMessage: String) {
+        errorState.errorMessage = errorMessage
+        errorState.showError = true
     }
 }
