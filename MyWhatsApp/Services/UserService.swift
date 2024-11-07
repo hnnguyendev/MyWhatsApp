@@ -8,6 +8,7 @@
 import Foundation
 import Firebase
 import FirebaseDatabase
+import FirebaseDatabaseSwift
 
 struct UserService {
     // MARK: Firebase
@@ -46,6 +47,23 @@ struct UserService {
         }
         
         return .emptyNode
+    }
+    
+    static func getUsers(with uids: [String], completion: @escaping (UserNode) -> Void) {
+        var users: [UserItem] = []
+        for uid in uids {
+            let query = FirebaseConstants.UsersRef.child(uid)
+            /// We're going to observeSingleEvent which is just going to get me the data without any form of Observe
+            query.observeSingleEvent(of: .value) { snapshot in
+                guard let user = try? snapshot.data(as: UserItem.self) else { return }
+                users.append(user)
+                if users.count == uids.count {
+                    completion(UserNode(users: users))
+                }
+            } withCancel: { error in
+                completion(.emptyNode)
+            }
+        }
     }
 }
 
