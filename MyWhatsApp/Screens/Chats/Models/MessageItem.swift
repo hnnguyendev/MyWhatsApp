@@ -38,6 +38,7 @@ struct MessageItem: Identifiable {
 }
 
 extension String {
+    static let text = "text"
     static let `type` = "type"
     static let timestamp = "timestamp"
     static let ownerUid = "ownerUid"

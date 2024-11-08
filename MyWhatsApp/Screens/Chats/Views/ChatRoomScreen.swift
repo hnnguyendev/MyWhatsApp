@@ -9,6 +9,13 @@ import SwiftUI
 
 struct ChatRoomScreen: View {
     let channel: ChannelItem
+//    @StateObject private var viewModel = ChatRoomViewModel()
+    // ~ We can init like below
+    @StateObject private var viewModel: ChatRoomViewModel
+    init(channel: ChannelItem) {
+        self.channel = channel
+        _viewModel = StateObject(wrappedValue: ChatRoomViewModel(channel))
+    }
     
     var body: some View {
 //        ScrollView {
@@ -31,7 +38,9 @@ struct ChatRoomScreen: View {
             }
             .navigationBarTitleDisplayMode(.inline) /// Hidden redundant white space on top ChatRoomScreen
             .safeAreaInset(edge: .bottom) {
-                TextInputArea()
+                TextInputArea(textMessage: $viewModel.textMessage) {
+                    viewModel.sendMessage()
+                }
             }
     }
 }
