@@ -44,7 +44,7 @@ struct ChannelItem: Identifiable {
     }
     
     private var groupMemberName: String {
-        let membersCount = membersExcludingMe.count
+        let membersCount = membersCount - 1 /// Minus one is we're trying to subtract the currently logged in user
         let fullNames: [String] = membersExcludingMe.map { $0.username }
         
         if membersCount == 2 {
