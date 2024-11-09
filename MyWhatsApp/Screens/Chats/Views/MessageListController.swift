@@ -15,6 +15,8 @@ final class MessageListController: UIViewController {
     // MARK: View's LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.backgroundColor = .clear
+        view.backgroundColor = .clear
         setUpViews()
         setupMessageListeners()
     }
@@ -48,11 +50,23 @@ final class MessageListController: UIViewController {
         return tableView
     }()
     
+    private let backgroundImageView: UIImageView = {
+        let backgroundImageView = UIImageView(image: .chatbackground)
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        return backgroundImageView
+    }()
+    
     // MARK: Methods
     private func setUpViews() {
+        view.addSubview(backgroundImageView)
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -98,6 +112,17 @@ extension MessageListController: UITableViewDelegate, UITableViewDataSource {
                 BubbleImageView(item: message)
             case .audio:
                 BubbleAudioView(item: message)
+            case .admin(let adminType):
+                switch adminType {
+                case .channelCreation:
+                    ChannelCreationTextView()
+                    
+                    if viewModel.channel.isGroupChat {
+                        AdminMessageTextView(channel: viewModel.channel)
+                    }
+                default:
+                    Text("UNKNOWN")
+                }
             }
         }
         return cell
@@ -115,4 +140,5 @@ extension MessageListController: UITableViewDelegate, UITableViewDataSource {
 
 #Preview {
     MessageListView(ChatRoomViewModel(.placeholder))
+        .ignoresSafeArea()
 }

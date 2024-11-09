@@ -16,10 +16,12 @@ enum AdminMessageType: String {
 
 /// Reason we're not making MessageType of type String becase this MessageType is going to also have admin messages and thoose are not actually string
 enum MessageType {
-    case text, photo, video, audio
+    case admin(_ type: AdminMessageType), text, photo, video, audio
     
     var title: String {
         switch self {
+        case .admin:
+            return "admin"
         case .text:
             return "text"
         case .photo:
@@ -31,7 +33,7 @@ enum MessageType {
         }
     }
     
-    init(_ stringValue: String) {
+    init?(_ stringValue: String) {
         switch stringValue {
         case .text:
             self = .text
@@ -42,7 +44,30 @@ enum MessageType {
         case "audio":
             self = .audio
         default:
-            self = .text
+            if let adminMessageType = AdminMessageType(rawValue: stringValue) {
+                self = .admin(adminMessageType)
+            } else {
+                return nil
+            }
+        }
+    }
+}
+
+/// Fix error in BubbleImageView: Referencing operator function '==' on 'Equatable' requires that 'MessageType' conform to 'Equatable'
+extension MessageType: Equatable {
+    static func == (leftHandSide: MessageType, rightHandSide: MessageType) -> Bool {
+        switch(leftHandSide, rightHandSide) {
+        case (.admin(let leftAdmin), .admin(let rightAdmin)):
+            return leftAdmin == rightAdmin
+            
+        case (.text, .text),
+            (.photo, .photo),
+            (.video, .video),
+            (.audio, .audio):
+            return true
+            
+        default:
+            return false
         }
     }
 }

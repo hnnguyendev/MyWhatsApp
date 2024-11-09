@@ -33,6 +33,8 @@ struct MessageService {
         onComplete()
     }
     
+    /// This method is very inefficient right now because we're just fetching all the messages on the backend
+    /// Need paginate the messages
     static func getMessages(for channel: ChannelItem, completion: @escaping([MessageItem]) -> Void) {
         FirebaseConstants.ChannelMessagesRef.child(channel.id).observe(.value) { snapshot in
             guard let channelMessageDict = snapshot.value as? [String: Any] else { return }
@@ -42,7 +44,10 @@ struct MessageService {
                 let messageDict = value as? [String: Any] ?? [:]
                 let message = MessageItem(id: key, dict: messageDict)
                 messages.append(message)
-                completion(messages)
+                if messages.count == snapshot.childrenCount {
+                    messages.sort { $0.timestamp < $1.timestamp }
+                    completion(messages)
+                }
             }
         } withCancel: { error in
             print("Failed to get messages for \(channel.title)")

@@ -12,7 +12,8 @@ import Combine
 final class ChatRoomViewModel: ObservableObject {
     @Published var textMessage = ""
     @Published var messages = [MessageItem]()
-    private let channel: ChannelItem
+    /// We're just going to make this a privately set property but we want to be able to access it outside
+    private(set) var channel: ChannelItem
     private var subscriptions = Set<AnyCancellable>()
     private var currentUser: UserItem?
     
