@@ -19,7 +19,7 @@ struct ChannelItem: Identifiable {
     var memberUids: [String]
 //    var membersCount: UInt /// Unassign Int because it can't really be less than 0
     var membersCount: Int
-    var thumbnailUrl: String?
+    private var thumbnailUrl: String?
     var members: [UserItem] /// Don't store in Firabase DB
     
     var isGroupChat: Bool {
@@ -64,6 +64,18 @@ struct ChannelItem: Identifiable {
     
     var creatorName: String {
         return members.first { $0.uid == createdBy }?.username ?? "Someone"
+    }
+    
+    var coverImageUrl: String? {
+        if let thumbnailUrl = thumbnailUrl {
+            return thumbnailUrl
+        }
+        
+        if isGroupChat == false {
+            return membersExcludingMe.first?.profileImageUrl
+        }
+        
+        return nil
     }
     
     static let placeholder = ChannelItem.init(id: "1", creationDate: Date(), createdBy: "", lastMessage: "Hello World!", lastMessageTimestamp: Date(), adminUids: [], memberUids: [], membersCount: 2, members: [])
