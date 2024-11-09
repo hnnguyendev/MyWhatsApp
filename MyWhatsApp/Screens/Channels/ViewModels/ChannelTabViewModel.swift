@@ -9,6 +9,7 @@ import Foundation
 import Firebase
 
 final class ChannelTabViewModel: ObservableObject {
+    @Published var navRoutes = [ChannelTabRoutes]() /// switch from NavigationLink to .navigationDestination
     @Published var navigateToChatRoom = false
     @Published var newChannel: ChannelItem?
     @Published var showChatPartnerPickerView = false
@@ -72,4 +73,9 @@ final class ChannelTabViewModel: ObservableObject {
         self.channels = Array(channelDictionary.values)
         self.channels.sort { $0.lastMessageTimestamp > $1.lastMessageTimestamp }
     }
+}
+
+/// switch from NavigationLink to .navigationDestination
+enum ChannelTabRoutes: Hashable {
+    case chatRoom(_ channel: ChannelItem)
 }

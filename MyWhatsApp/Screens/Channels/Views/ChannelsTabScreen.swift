@@ -12,13 +12,23 @@ struct ChannelsTabScreen: View {
     @StateObject private var viewModel = ChannelTabViewModel()
     
     var body: some View {
-        NavigationStack {
+        /// switch from NavigationLink to .navigationDestination -> pass path parameter to NavigationStack
+        NavigationStack(path: $viewModel.navRoutes) {
             List {
                 archivedButton()
                 
                 ForEach(viewModel.channels) { channel in
-                    NavigationLink {
-                        ChatRoomScreen(channel: channel)
+                    /// We're using navigation link it's actually initializing this ChatRoomScreen and that is obviously problematic
+                    /// We want some sort of a lazy initialization we don't want to touch this initialize this ChatRoomScreen, we don't want to load it into memory until we actually navigate to it
+                    /// It mean before we navigate to a ChatRoomScreen, it's already loaded into memory and that's obviously problematic
+                    /// We only want to load into memory when we actually navigate into it -> So we're going to switch from NavigationLink to .navigationDestination
+//                    NavigationLink {
+//                        ChatRoomScreen(channel: channel)
+//                    } label: {
+//                        ChannelItemView(channel: channel)
+//                    }
+                    Button {
+                        viewModel.navRoutes.append(.chatRoom(channel))
                     } label: {
                         ChannelItemView(channel: channel)
                     }
@@ -33,6 +43,10 @@ struct ChannelsTabScreen: View {
             .toolbar {
                 leadingNavItem()
                 trailingNavItem()
+            }
+            /// switch from NavigationLink to .navigationDestination
+            .navigationDestination(for: ChannelTabRoutes.self) { route in
+                destinationView(for: route)
             }
             .sheet(isPresented: $viewModel.showChatPartnerPickerView) {
                 ChatPartnerPickerScreen(onCreate: viewModel.onNewChannelCreation)
@@ -121,6 +135,15 @@ extension ChannelsTabScreen {
         .foregroundStyle(.gray)
         .font(.caption)
         .padding(.horizontal)
+    }
+    
+    /// switch from NavigationLink to .navigationDestination
+    @ViewBuilder
+    private func destinationView(for route: ChannelTabRoutes) -> some View {
+        switch route {
+        case .chatRoom(let channel):
+            ChatRoomScreen(channel: channel)
+        }
     }
 }
 
