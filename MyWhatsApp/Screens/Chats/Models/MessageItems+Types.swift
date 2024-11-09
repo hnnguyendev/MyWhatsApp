@@ -14,6 +14,7 @@ enum AdminMessageType: String {
     case channelNameChanged
 }
 
+/// Reason we're not making MessageType of type String becase this MessageType is going to also have admin messages and thoose are not actually string
 enum MessageType {
     case text, photo, video, audio
     
@@ -27,6 +28,21 @@ enum MessageType {
             return "video"
         case .audio:
             return "audio"
+        }
+    }
+    
+    init(_ stringValue: String) {
+        switch stringValue {
+        case .text:
+            self = .text
+        case "photo":
+            self = .photo
+        case "video":
+            self = .video
+        case "audio":
+            self = .audio
+        default:
+            self = .text
         }
     }
 }

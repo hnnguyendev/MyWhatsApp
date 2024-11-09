@@ -11,7 +11,7 @@ struct BubbleTextView: View {
     let item: MessageItem
     var body: some View {
         VStack(alignment: item.horizontalAliment, spacing: 3) {
-            Text("Hello, World! How are you doing")
+            Text(item.text)
                 .padding(10)
                 .background(item.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))

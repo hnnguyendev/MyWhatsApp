@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+// 1. ChatRoomScreen which is top components to SwiftUI view
+// 2. MessageListView which is also a SwiftUI view but it's a UI view representable, view representable which is just a SwiftUI way of converting a UIKit view into a SwiftUI view
+// 3. That UIKit view that we're converting is this MessageListController which is a UIKit UITableView
+// 4. We're just taking that viewModel all the way from the ChatRoomScreen, we're injecting the data into MessageListView and then we're injecting it into our UIKit view which is this MessageListController
 struct ChatRoomScreen: View {
     let channel: ChannelItem
 //    @StateObject private var viewModel = ChatRoomViewModel()
@@ -30,7 +34,7 @@ struct ChatRoomScreen: View {
 //                }
 //            }
 //        }
-        MessageListView()
+        MessageListView(viewModel)
             .toolbar(.hidden, for: .tabBar)
             .toolbar {
                 leadingNavItem()
