@@ -9,7 +9,11 @@ import SwiftUI
 
 struct ChannelsTabScreen: View {
     @State private var searchText = ""
-    @StateObject private var viewModel = ChannelTabViewModel()
+    @StateObject private var viewModel: ChannelTabViewModel
+    
+    init(_ currentUser: UserItem) {
+        self._viewModel = StateObject(wrappedValue: ChannelTabViewModel(currentUser))
+    }
     
     var body: some View {
         /// switch from NavigationLink to .navigationDestination -> pass path parameter to NavigationStack
@@ -148,5 +152,5 @@ extension ChannelsTabScreen {
 }
 
 #Preview {
-    ChannelsTabScreen()
+    ChannelsTabScreen(.placeholder)
 }

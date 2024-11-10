@@ -17,7 +17,10 @@ final class ChannelTabViewModel: ObservableObject {
     typealias ChannelId = String
     @Published var channelDictionary: [ChannelId: ChannelItem] = [:]
     
-    init() {
+    private let currentUser: UserItem
+    
+    init(_ currentUser: UserItem) {
+        self.currentUser = currentUser
         fetchCurrentUserChannels()
     }
     
@@ -43,15 +46,16 @@ final class ChannelTabViewModel: ObservableObject {
     
     private func getChannel(with channelId: String) {
         FirebaseConstants.ChannelsRef.child(channelId).observe(.value) { [weak self] (snapshot: DataSnapshot) in
-            guard let channelDict = snapshot.value as? [String: Any] else { return }
+            guard let channelDict = snapshot.value as? [String: Any], let self = self else { return }
             var channel = ChannelItem(channelDict)
-            self?.getChannelMembers(channel) { members in
+            self.getChannelMembers(channel) { members in
                 channel.members = members
+                channel.members.append(self.currentUser)
                 /// Fix bug duplicate channel -> create channelDictionary, assign channels as a Array
 //                self?.channels.append(channel)
                 /// I'm storing these arrays, I'm storing this channel inside of a dictionary and using their channelId as the key to be able to access it
-                self?.channelDictionary[channelId] = channel
-                self?.reloadData()
+                self.channelDictionary[channelId] = channel
+                self.reloadData()
                 print("Channel: \(channel.title)")
             }
         } withCancel: { error in

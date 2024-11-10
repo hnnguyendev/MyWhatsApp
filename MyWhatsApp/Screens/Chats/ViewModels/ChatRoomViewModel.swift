@@ -30,10 +30,16 @@ final class ChatRoomViewModel: ObservableObject {
     
     private func listenToAuthState() {
         AuthManager.shared.authState.receive(on: DispatchQueue.main).sink { [weak self] authState in
+            guard let self = self else { return }
             switch authState {
             case .loggedIn(let currentUser):
-                self?.currentUser = currentUser
-                self?.getMessages()
+                self.currentUser = currentUser
+                if self.channel.allMembersFetched {
+                    self.getMessages()
+                    print("Channel members: \(channel.members.map { $0.username })")
+                } else {
+                    self.getAllChannelMembers()
+                }
             default:
                 break
             }
@@ -53,6 +59,22 @@ final class ChatRoomViewModel: ObservableObject {
         MessageService.getMessages(for: channel) { [weak self] messages in
             self?.messages = messages
             print("Messages: \(messages.map { $0.text })")
+        }
+    }
+    
+    private func getAllChannelMembers() {
+        /// I already have current user, and potentially 2 other members (in ChannelTabViewModel -> getChannelMembers() so no need to refetch those
+        guard let currentUser = currentUser else { return }
+        let membersAllreadyFetched = channel.members.compactMap { $0.uid }
+        var membersUidsToFetch = channel.memberUids.filter { !membersAllreadyFetched.contains($0) }
+        membersUidsToFetch = membersUidsToFetch.filter { $0 != currentUser.uid }
+        
+        UserService.getUsers(with: membersUidsToFetch) { [weak self] userNode in
+            /// Because we're creating a weak reference here so if for any reason this context doesn't exist, just ignore or exit out of the scope
+            guard let self = self else { return }
+            self.channel.members.append(contentsOf: userNode.users)
+            self.getMessages()
+            print("getAllChannelMembers: \(channel.members.map { $0.username })")
         }
     }
     
