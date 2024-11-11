@@ -42,7 +42,7 @@ struct MessageService {
             /// In Firebase Database key is channel.id, value are messageId key pairs of the messages
             channelMessageDict.forEach { key, value in
                 let messageDict = value as? [String: Any] ?? [:]
-                let message = MessageItem(id: key, dict: messageDict)
+                let message = MessageItem(id: key, isGroupChat: channel.isGroupChat, dict: messageDict)
                 messages.append(message)
                 if messages.count == snapshot.childrenCount {
                     messages.sort { $0.timestamp < $1.timestamp }

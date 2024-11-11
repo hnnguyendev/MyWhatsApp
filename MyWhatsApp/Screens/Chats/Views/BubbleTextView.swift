@@ -10,35 +10,48 @@ import SwiftUI
 struct BubbleTextView: View {
     let item: MessageItem
     var body: some View {
-        VStack(alignment: item.horizontalAliment, spacing: 3) {
+        HStack(alignment: .bottom, spacing: 5) {
+            if item.showGroupPartnerInfo {
+                CircularProfileImageView(item.sender?.profileImageUrl, size: .mini)
+            }
+            
+            if item.direction == .sent {
+                timestampTextView()
+            }
+            
             Text(item.text)
                 .padding(10)
                 .background(item.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .applyTail(item.direction)
             
-            timestampTextView()
+            if item.direction == .received {
+                timestampTextView()
+            }
         }
         .shadow(color: Color(.systemGray3).opacity(0.1), radius: 5, x: 0, y: 20)
         .frame(maxWidth: .infinity, alignment: item.alignment)
-        .padding(.leading, item.direction == .sent ? 100 : 5)
-        .padding(.trailing, item.direction == .sent ? 5 : 100)
+        .padding(.leading, item.leadingPadding)
+        .padding(.trailing, item.trailingPadding)
     }
     
     private func timestampTextView() -> some View {
-        HStack {
-            Text(item.timestamp.formatToTime)
-                .font(.system(size: 13))
-                .foregroundStyle(.gray)
-            
-            if item.direction == .sent {
-                Image(.seen)
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 15, height: 15)
-                    .foregroundStyle(Color(.systemBlue))
-            }
-        }
+        Text(item.timestamp.formatToTime)
+            .font(.footnote)
+            .foregroundStyle(.gray)
+//        HStack {
+//            Text(item.timestamp.formatToTime)
+//                .font(.system(size: 13))
+//                .foregroundStyle(.gray)
+//            
+//            if item.direction == .sent {
+//                Image(.seen)
+//                    .resizable()
+//                    .renderingMode(.template)
+//                    .frame(width: 15, height: 15)
+//                    .foregroundStyle(Color(.systemBlue))
+//            }
+//        }
     }
 }
 
