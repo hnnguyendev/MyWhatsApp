@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 // 1. ChatRoomScreen which is top components to SwiftUI view
 // 2. MessageListView which is also a SwiftUI view but it's a UI view representable, view representable which is just a SwiftUI way of converting a UIKit view into a SwiftUI view
@@ -40,6 +41,11 @@ struct ChatRoomScreen: View {
                 leadingNavItem()
                 trailingNavItem()
             }
+            .photosPicker(
+                isPresented: $viewModel.showPhotoPicker,
+                selection: $viewModel.photoPickerItems,
+                maxSelectionCount: 6
+            )
             .navigationBarTitleDisplayMode(.inline) /// Hidden redundant white space on top ChatRoomScreen
             .safeAreaInset(edge: .bottom) {
 //                TextInputArea(textMessage: $viewModel.textMessage) {
@@ -53,12 +59,13 @@ struct ChatRoomScreen: View {
         VStack(spacing: 0) {
             Divider()
             
-            MediaAttachmentPreview()
+            if viewModel.showPhotoPickerPreview {
+                MediaAttachmentPreview(selectedPhotos: viewModel.selectedPhotos)
+                Divider()
+            }
             
-            Divider()
-            
-            TextInputArea(textMessage: $viewModel.textMessage) {
-                viewModel.sendMessage()
+            TextInputArea(textMessage: $viewModel.textMessage) { action in
+                viewModel.handleTextInputArea(action)
             }
         }
     }

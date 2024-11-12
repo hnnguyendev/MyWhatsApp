@@ -7,19 +7,30 @@
 
 import Foundation
 import Combine
+import SwiftUI
+import PhotosUI
 
 // ObservableObject because we want to be able to listen to changes
 final class ChatRoomViewModel: ObservableObject {
     @Published var textMessage = ""
     @Published var messages = [MessageItem]()
+    @Published var showPhotoPicker = false
+    @Published var photoPickerItems: [PhotosPickerItem] = []
+    @Published var selectedPhotos: [UIImage] = []
+    
     /// We're just going to make this a privately set property but we want to be able to access it outside
     private(set) var channel: ChannelItem
     private var subscriptions = Set<AnyCancellable>()
     private var currentUser: UserItem?
     
+    var showPhotoPickerPreview: Bool {
+        return !photoPickerItems.isEmpty
+    }
+    
     init(_ channel: ChannelItem) {
         self.channel = channel
         listenToAuthState()
+        onPhotoPickerSelection()
     }
     
     deinit {
@@ -75,6 +86,40 @@ final class ChatRoomViewModel: ObservableObject {
             self.channel.members.append(contentsOf: userNode.users)
             self.getMessages()
             print("getAllChannelMembers: \(channel.members.map { $0.username })")
+        }
+    }
+    
+    func handleTextInputArea(_ action: TextInputArea.UserAction) {
+        switch action {
+        case .presentPhotoPicker:
+            showPhotoPicker = true
+        case .sendMessage:
+            sendMessage()
+        }
+    }
+    
+    // We're listening and subscribing to $photoPickerItems publisher
+    private func onPhotoPickerSelection() {
+        $photoPickerItems.sink { [weak self] photoItems in
+            guard let self = self else { return }
+            Task {
+                await self.parsePhotoPickerItems(photoItems)
+            }
+        }
+        .store(in: &subscriptions)
+    }
+    
+    // Then we're converting those photoPickerItems objects to a UIImage object using loadTransferable. First we convert it to a Data and then we convert that Data to a UIImage
+    private func parsePhotoPickerItems(_ photoPickerItems: [PhotosPickerItem]) async {
+        for photoItem in photoPickerItems {
+            guard
+            let data = try? await photoItem.loadTransferable(type: Data.self),
+            let uiImage = UIImage(data: data)
+            else {
+                return
+            }
+            
+            self.selectedPhotos.insert(uiImage, at: 0)
         }
     }
     
