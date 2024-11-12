@@ -42,10 +42,25 @@ struct ChatRoomScreen: View {
             }
             .navigationBarTitleDisplayMode(.inline) /// Hidden redundant white space on top ChatRoomScreen
             .safeAreaInset(edge: .bottom) {
-                TextInputArea(textMessage: $viewModel.textMessage) {
-                    viewModel.sendMessage()
-                }
+//                TextInputArea(textMessage: $viewModel.textMessage) {
+//                    viewModel.sendMessage()
+//                }
+                bottomSafeAreaView()
             }
+    }
+    
+    private func bottomSafeAreaView() -> some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            MediaAttachmentPreview()
+            
+            Divider()
+            
+            TextInputArea(textMessage: $viewModel.textMessage) {
+                viewModel.sendMessage()
+            }
+        }
     }
 }
 
