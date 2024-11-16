@@ -44,15 +44,19 @@ struct ChatRoomScreen: View {
             .photosPicker(
                 isPresented: $viewModel.showPhotoPicker,
                 selection: $viewModel.photoPickerItems,
-                maxSelectionCount: 6
+                maxSelectionCount: 6,
+                photoLibrary: .shared()
             )
             .navigationBarTitleDisplayMode(.inline) /// Hidden redundant white space on top ChatRoomScreen
+            .ignoresSafeArea(edges: .bottom)
             .safeAreaInset(edge: .bottom) {
 //                TextInputArea(textMessage: $viewModel.textMessage) {
 //                    viewModel.sendMessage()
 //                }
                 bottomSafeAreaView()
+                    .background(Color.whatsAppWhite)
             }
+            .animation(.easeInOut, value: viewModel.showPhotoPickerPreview)
             .fullScreenCover(isPresented: $viewModel.videoPlayerState.show) {
                 if let player = viewModel.videoPlayerState.player {
                     MediaPlayerView(player: player) {
