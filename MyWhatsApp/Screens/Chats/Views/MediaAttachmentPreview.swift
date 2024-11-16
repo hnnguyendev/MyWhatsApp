@@ -7,8 +7,10 @@
 
 import SwiftUI
 
+// Whenever a user selects that play button from inside of this MediaAttachmentPreview, we want us to send that action and information to our ChatRoomScreen and then ChatRoomScreen is going to delegate that to out ChatRoomViewModel
 struct MediaAttachmentPreview: View {
     let mediaAttachments: [MediaAttachment]
+    let actionHandler: (_ action: UserAction) -> Void
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -39,7 +41,7 @@ struct MediaAttachmentPreview: View {
                     cancelButton()
                 }
                 .overlay() {
-                    playButton("play.fill")
+                    playButton("play.fill", attachment: attachment)
                         .opacity(attachment.type == .video(UIImage(), .stubUrl) ? 1 : 0)
                 }
         }
@@ -62,9 +64,9 @@ struct MediaAttachmentPreview: View {
         }
     }
     
-    private func playButton(_ systemName: String) -> some View {
+    private func playButton(_ systemName: String, attachment: MediaAttachment) -> some View {
         Button {
-            
+            actionHandler(.play(attachment))
         } label: {
             Image(systemName: systemName)
                 .scaledToFit()
@@ -79,10 +81,10 @@ struct MediaAttachmentPreview: View {
         }
     }
     
-    private func audioAttachmentPreview() -> some View {
+    private func audioAttachmentPreview(_ attachment: MediaAttachment) -> some View {
         ZStack {
             LinearGradient(colors: [.green, .green.opacity(0.8)], startPoint: .topLeading, endPoint: .bottom)
-            playButton("mic.fill")
+            playButton("mic.fill", attachment: attachment)
                 .padding(.bottom, 15)
         }
         .frame(width: Constants.imageDimension * 2, height: Constants.imageDimension)
@@ -108,8 +110,14 @@ extension MediaAttachmentPreview {
         static let listHeight: CGFloat = 100
         static let imageDimension: CGFloat = 80
     }
+    
+    enum UserAction {
+        case play (_ item: MediaAttachment)
+    }
 }
 
 #Preview {
-    MediaAttachmentPreview(mediaAttachments: [])
+    MediaAttachmentPreview(mediaAttachments: []) { _ in
+        
+    }
 }

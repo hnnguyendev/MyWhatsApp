@@ -17,6 +17,7 @@ final class ChatRoomViewModel: ObservableObject {
     @Published var showPhotoPicker = false
     @Published var photoPickerItems: [PhotosPickerItem] = []
     @Published var mediaAttachments: [MediaAttachment] = []
+    @Published var videoPlayerState: (show: Bool, player: AVPlayer?) = (false, nil)
     
     /// We're just going to make this a privately set property but we want to be able to access it outside
     private(set) var channel: ChannelItem
@@ -102,6 +103,7 @@ final class ChatRoomViewModel: ObservableObject {
     private func onPhotoPickerSelection() {
         $photoPickerItems.sink { [weak self] photoItems in
             guard let self = self else { return }
+            self.mediaAttachments.removeAll()
             Task {
                 await self.parsePhotoPickerItems(photoItems)
             }
@@ -130,6 +132,25 @@ final class ChatRoomViewModel: ObservableObject {
                 let photoAttachment = MediaAttachment(id: UUID().uuidString, type: .photo(thumbnail))
                 self.mediaAttachments.insert(photoAttachment, at: 0)
             }
+        }
+    }
+    
+    func dismissVideoPlayer() {
+        videoPlayerState.player?.replaceCurrentItem(with: nil)
+        videoPlayerState.player = nil
+        videoPlayerState.show = false
+    }
+    
+    func showMediPlayer(_ fileURL: URL) {
+        videoPlayerState.show = true
+        videoPlayerState.player = AVPlayer(url: fileURL)
+    }
+    
+    func handleMediaAttachmentPreview(_ action: MediaAttachmentPreview.UserAction) {
+        switch action {
+        case .play(let attachment):
+            guard let fileURL = attachment.fileURL else { return }
+            showMediPlayer(fileURL)
         }
     }
 }
