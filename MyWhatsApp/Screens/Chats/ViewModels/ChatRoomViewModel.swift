@@ -96,6 +96,8 @@ final class ChatRoomViewModel: ObservableObject {
             showPhotoPicker = true
         case .sendMessage:
             sendMessage()
+        case .recordAudio:
+            toggleAudioRecorder()
         }
     }
     
@@ -109,6 +111,10 @@ final class ChatRoomViewModel: ObservableObject {
             }
         }
         .store(in: &subscriptions)
+    }
+    
+    private func toggleAudioRecorder() {
+        
     }
     
     // Then we're converting those photoPickerItems objects to a UIImage object using loadTransferable. First we convert it to a Data and then we convert that Data to a UIImage
