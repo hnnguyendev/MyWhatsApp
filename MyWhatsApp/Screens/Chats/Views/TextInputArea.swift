@@ -12,12 +12,13 @@ struct TextInputArea: View {
     @Binding var textMessage: String
     @Binding var isRecording: Bool
     @Binding var elapsedTime: TimeInterval
+    var disableSendButton: Bool
     
     /// A closure
     let actionHandler:(_ action: UserAction) -> Void
     
-    private var disableSendButton: Bool {
-        return textMessage.isEmptyOrWhiteSpace || isRecording
+    private var isSendButtonDisabled: Bool {
+        return disableSendButton || isRecording
     }
     
     var body: some View {
@@ -36,8 +37,8 @@ struct TextInputArea: View {
             }
             
             sendMessageButton()
-                .disabled(disableSendButton)
-                .grayscale(disableSendButton ? 0.8 : 0)
+                .disabled(isSendButtonDisabled)
+                .grayscale(isSendButtonDisabled ? 0.8 : 0)
         }
         .padding(.bottom)
         .padding(.horizontal, 8)
@@ -150,7 +151,7 @@ extension TextInputArea {
 //        
 //    }
     
-    TextInputArea(textMessage: .constant(""), isRecording: .constant(false), elapsedTime: .constant(0)) { _ in
+    TextInputArea(textMessage: .constant(""), isRecording: .constant(false), elapsedTime: .constant(0), disableSendButton: false) { _ in
         
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct BubbleImageView: View {
     let item: MessageItem
@@ -69,8 +70,10 @@ struct BubbleImageView: View {
     
     private func messageTextView() -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Image(.stubImage0)
+//            Image(.stubImage0)
+            KFImage(URL(string: item.thumbnailUrl ?? ""))
                 .resizable()
+                .placeholder { ProgressView() }
                 .scaledToFill()
                 .frame(width: 220, height: 180)
                 .clipShape(
