@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct TextInputArea: View {
-    @Binding var textMessage: String
-    @State private var isRecording = false
     @State private var isPulsing = false
+    @Binding var textMessage: String
+    @Binding var isRecording: Bool
+    @Binding var elapsedTime: TimeInterval
+    
     /// A closure
     let actionHandler:(_ action: UserAction) -> Void
     
@@ -22,12 +24,17 @@ struct TextInputArea: View {
         HStack(alignment: .bottom, spacing: 5) {
             imagePickerButton()
                 .padding(3)
+                .disabled(isRecording)
+                .grayscale(isRecording ? 0.8 : 0)
+            
             audioRecorderButton()
+            
             if isRecording {
                 audioSessionIndicatorView()
             } else {
                 messageTextField()
             }
+            
             sendMessageButton()
                 .disabled(disableSendButton)
                 .grayscale(disableSendButton ? 0.8 : 0)
@@ -36,7 +43,16 @@ struct TextInputArea: View {
         .padding(.horizontal, 8)
         .padding(.top, 10)
         .background(.whatsAppWhite)
-        .animation(.spring, value: isRecording)
+        .animation(.spring, value: isRecording)        
+        .onChange(of: isRecording) { oldValue, newValueIsRecording in
+            if newValueIsRecording {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
+                    isPulsing = true
+                }
+            } else {
+                isPulsing = false
+            }
+        }
     }
     
     private func imagePickerButton() -> some View {
@@ -51,10 +67,6 @@ struct TextInputArea: View {
     private func audioRecorderButton() -> some View {
         Button {
             actionHandler(.recordAudio)
-            isRecording.toggle()
-            withAnimation(.easeInOut(duration: 1.5).repeatForever()) {
-                isPulsing.toggle()
-            }
         } label: {
             Image(systemName: isRecording ? "square.fill" : "mic.fill")
                 .fontWeight(.heavy)
@@ -89,7 +101,8 @@ struct TextInputArea: View {
             
             Spacer()
             
-            Text("00:01")
+            // 00:01
+            Text(elapsedTime.formatElapsedTime)
                 .font(.callout)
                 .fontWeight(.semibold)
         }
@@ -133,7 +146,11 @@ extension TextInputArea {
  
 #Preview {
     /// Trailing closure syntax
-    TextInputArea(textMessage: .constant("")) { _ in 
+//    TextInputArea(textMessage: .constant("")) { _ in 
+//        
+//    }
+    
+    TextInputArea(textMessage: .constant(""), isRecording: .constant(false), elapsedTime: .constant(0)) { _ in
         
     }
 }

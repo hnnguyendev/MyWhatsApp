@@ -10,7 +10,7 @@ import AVFoundation
 import UIKit
 
 extension URL {
-    static var stubUrl: URL {
+    static var stubURL: URL {
         return URL(string: "https://google.com")!
     }
     
