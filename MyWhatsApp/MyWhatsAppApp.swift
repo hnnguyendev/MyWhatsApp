@@ -20,7 +20,7 @@ import Firebase
 /// Config Firebase Authentication
 /// Create Firebase database: Build -> Realtime Database -> set rules, Build -> Storage -> set rules
 
-/// Install the Kingfisher Dependencies: https://github.com/onevcat/Kingfisher
+/// Install the Kingfisher Dependencies: https://github.com/onevcat/Kingfisher (8.1.0)/(7.11.0)
 /// Kingfisher is going to be responsible for handling image caching for us it's very reliable
 
 class AppDelegate: NSObject, UIApplicationDelegate {
