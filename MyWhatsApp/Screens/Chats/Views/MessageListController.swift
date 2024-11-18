@@ -47,6 +47,9 @@ final class MessageListController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor.gray.withAlphaComponent(0.4)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.contentInset = .init(top: 0, left: 0, bottom: 60, right: 0)
+        tableView.scrollIndicatorInsets = .init(top: 0, left: 0, bottom: 60, right: 0)
+        tableView.keyboardDismissMode = .onDrag
         return tableView
     }()
     
@@ -86,6 +89,15 @@ final class MessageListController: UIViewController {
         /// Because this is going to be creating a strong reference let break that by making it [weak self]
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
+            }
+            .store(in: &subscriptions)
+        
+        viewModel.$scrollToBottomRequest
+            .debounce(for: .milliseconds(delay), scheduler: DispatchQueue.main)
+            .sink { [weak self] scrollRequest in
+                if scrollRequest.scroll {
+                    self?.tableView.scrollToLastRow(at: .bottom, animated: scrollRequest.isAnimated)
+                }
             }
             .store(in: &subscriptions)
     }
@@ -136,6 +148,17 @@ extension MessageListController: UITableViewDelegate, UITableViewDataSource {
         return UITableView.automaticDimension
     }
     
+}
+
+private extension UITableView {
+    func scrollToLastRow(at scrollPosition: UITableView.ScrollPosition, animated: Bool) {
+        guard numberOfRows(inSection: numberOfSections - 1) > 0 else { return }
+        
+        let lastSessionIndex = numberOfSections - 1
+        let lastRowIndex = numberOfRows(inSection: lastSessionIndex) - 1
+        let lastRowIndexPath = IndexPath(row: lastRowIndex, section: lastSessionIndex)
+        scrollToRow(at: lastRowIndexPath, at: scrollPosition, animated: animated)
+    }
 }
 
 #Preview {

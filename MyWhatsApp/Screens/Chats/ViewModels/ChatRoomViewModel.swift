@@ -20,6 +20,7 @@ final class ChatRoomViewModel: ObservableObject {
     @Published var videoPlayerState: (show: Bool, player: AVPlayer?) = (false, nil)
     @Published var isRecordingVoiceMessage = false
     @Published var elapsedVoiceMessageTime: TimeInterval = 0
+    @Published var scrollToBottomRequest: (scroll: Bool, isAnimated: Bool) = (false, false)
     
     /// We're just going to make this a privately set property but we want to be able to access it outside
     private(set) var channel: ChannelItem
@@ -77,7 +78,15 @@ final class ChatRoomViewModel: ObservableObject {
             }
         } else {
             sendMultipleMediaMessages(textMessage, attachments: mediaAttachments)
+            clearTextInputArea()
         }
+    }
+    
+    private func clearTextInputArea() {
+        mediaAttachments.removeAll()
+        photoPickerItems.removeAll()
+        textMessage = ""
+        UIApplication.dismissKeyboard()
     }
     
     private func sendMultipleMediaMessages(_ text: String, attachments: [MediaAttachment]) {
@@ -109,13 +118,19 @@ final class ChatRoomViewModel: ObservableObject {
                 sender: currentUser
             )
             
-            MessageService.sendMediaMessage(to: channel, params: uploadParams) {
+            MessageService.sendMediaMessage(to: channel, params: uploadParams) { [weak self] in
                 /// TODO: Scroll to bottom upon image upload success
                 print("Uploaded Photo to Database")
+                self?.scrollToBottom(isAnimated: true)
             }
         }
     }
     
+    private func scrollToBottom(isAnimated: Bool) {
+        scrollToBottomRequest.scroll = true
+        scrollToBottomRequest.isAnimated = isAnimated
+    }
+     
     private func uploadImageToStorage(_ attachment: MediaAttachment, completion: @escaping(_ imageURL: URL) -> Void) {
         FirebaseHelper.uploadImage(attachment.thumbnail, for: .photoMessage) { result in
             switch result {
