@@ -49,10 +49,11 @@ struct MessageService {
             .ownerUid: params.ownerUid
         ]
         
-        /// Photo Messages
+        /// Photo Messages & Video Messages
         messageDict[.thumbnailUrl] = params.thumbnailUrl ?? nil
         messageDict[.thumbnailWidth] = params.thumbnailWidth ?? nil
         messageDict[.thumbnailHeight] = params.thumbnailHeight ?? nil
+        messageDict[.videoUrl] = params.videoUrl ?? nil
         
         FirebaseConstants.ChannelsRef.child(channel.id).updateChildValues(channelDict)
         FirebaseConstants.ChannelMessagesRef.child(channel.id).child(messageId).setValue(messageDict)
@@ -88,8 +89,8 @@ struct MessageUploadParams {
     let type: MessageType
     let attachment: MediaAttachment
     var thumbnailUrl: String?
-    var videoURL: String?
-    var audioURL: String?
+    var videoUrl: String?
+    var audioUrl: String?
     var audioDuration: TimeInterval?
     var sender: UserItem
     

@@ -20,6 +20,7 @@ struct MessageItem: Identifiable {
     let ownerUid: String
     let timestamp: Date
     var sender: UserItem?
+    var videoUrl: String?
     
     /// change direction from constant to a computed property
 //    let direction: MessageDirection
@@ -90,6 +91,7 @@ extension MessageItem {
         self.ownerUid = dict[.ownerUid] as? String ?? ""
         let timestampInterval = dict[.timestamp] as? TimeInterval ?? 0
         self.timestamp = Date(timeIntervalSince1970: timestampInterval)
+        self.videoUrl = dict[.videoUrl] as? String ?? nil
     }
 }
 
@@ -100,4 +102,5 @@ extension String {
     static let ownerUid = "ownerUid"
     static let thumbnailWidth = "thumbnailWidth"
     static let thumbnailHeight = "thumbnailHeight"
+    static let videoUrl = "videoUrl"
 }

@@ -95,7 +95,7 @@ final class ChatRoomViewModel: ObservableObject {
             case .photo:
                 sendPhotoMessage(text: text, attachment)
             case .video:
-                break
+                sendVideoMessage(text: text, attachment)
             case .audio:
                 break
             }
@@ -108,7 +108,7 @@ final class ChatRoomViewModel: ObservableObject {
             /// Store the metadata to database
             guard let self = self, let currentUser else { return }
             print("Uploaded Image to Storage")
-
+            
             let uploadParams = MessageUploadParams(
                 channel: channel,
                 text: text,
@@ -126,11 +126,35 @@ final class ChatRoomViewModel: ObservableObject {
         }
     }
     
+    private func sendVideoMessage(text: String, _ attachment: MediaAttachment) {
+        /// Upload the video file to the storage bucket
+        uploadFileToStorage(for: .videoMessage, attachment) { [weak self] videoURL in
+            /// Upload the video thumbnail
+            self?.uploadImageToStorage(attachment, completion: { [weak self] imageURL in
+                guard let self = self, let currentUser else { return }
+                
+                let uploadParams = MessageUploadParams(
+                    channel: self.channel,
+                    text: text,
+                    type: .video,
+                    attachment: attachment,
+                    thumbnailUrl: imageURL.absoluteString,
+                    videoUrl: videoURL.absoluteString,
+                    sender: currentUser)
+                
+                MessageService.sendMediaMessage(to: self.channel, params: uploadParams) { [weak self] in
+                    print("Uploaded Video to Database")
+                    self?.scrollToBottom(isAnimated: true)
+                }
+            })
+        }
+    }
+    
     private func scrollToBottom(isAnimated: Bool) {
         scrollToBottomRequest.scroll = true
         scrollToBottomRequest.isAnimated = isAnimated
     }
-     
+    
     private func uploadImageToStorage(_ attachment: MediaAttachment, completion: @escaping(_ imageURL: URL) -> Void) {
         FirebaseHelper.uploadImage(attachment.thumbnail, for: .photoMessage) { result in
             switch result {
@@ -143,6 +167,24 @@ final class ChatRoomViewModel: ObservableObject {
             print("UPLOAD IMAGE PROGRESS: \(progress)")
         }
     }
+    
+    private func uploadFileToStorage(
+        for uploadType: FirebaseHelper.UploadType,
+        _ attachment: MediaAttachment,
+        completion: @escaping(_ fileURL: URL) -> Void) {
+            guard let fileToUpload = attachment.fileURL else { return }
+            FirebaseHelper.uploadFile(fileURL: fileToUpload, for: uploadType) { result in
+                switch result {
+                case .success(let fileURL):
+                    completion(fileURL)
+                case .failure(let error):
+                    print("Failed to upload File to Storage: \(error.localizedDescription)")
+                }
+            } progressHandler: { progress in
+                print("UPLOAD FILE PROGRESS: \(progress)")
+            }
+            
+        }
     
     private func getMessages() {
         /// First off let's break off this retain cycle by passing a weak self
@@ -221,15 +263,15 @@ final class ChatRoomViewModel: ObservableObject {
             if photoItem.isVideo {
                 if let movie = try? await photoItem.loadTransferable(type: VideoPickerTransferable.self),
                    let thumbnailImage = try? await movie.url.generateVideoThumbnail(),
-                    let itemIdentifier = photoItem.itemIdentifier {
+                   let itemIdentifier = photoItem.itemIdentifier {
                     let videoAttachment = MediaAttachment(id: itemIdentifier, type: .video(thumbnailImage, movie.url))
                     self.mediaAttachments.insert(videoAttachment, at: 0)
                 }
             } else {
                 guard
-                let data = try? await photoItem.loadTransferable(type: Data.self),
-                let thumbnail = UIImage(data: data),
-                let itemIdentifier = photoItem.itemIdentifier
+                    let data = try? await photoItem.loadTransferable(type: Data.self),
+                    let thumbnail = UIImage(data: data),
+                    let itemIdentifier = photoItem.itemIdentifier
                 else { return }
                 let photoAttachment = MediaAttachment(id: itemIdentifier, type: .photo(thumbnail))
                 self.mediaAttachments.insert(photoAttachment, at: 0)
