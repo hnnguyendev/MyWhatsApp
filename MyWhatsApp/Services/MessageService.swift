@@ -55,6 +55,10 @@ struct MessageService {
         messageDict[.thumbnailHeight] = params.thumbnailHeight ?? nil
         messageDict[.videoUrl] = params.videoUrl ?? nil
         
+        /// Voice Messages
+        messageDict[.audioUrl] = params.audioUrl ?? nil
+        messageDict[.audioDuration] = params.audioDuration ?? nil
+        
         FirebaseConstants.ChannelsRef.child(channel.id).updateChildValues(channelDict)
         FirebaseConstants.ChannelMessagesRef.child(channel.id).child(messageId).setValue(messageDict)
         completion()

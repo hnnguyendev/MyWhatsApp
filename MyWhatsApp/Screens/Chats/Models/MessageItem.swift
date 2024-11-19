@@ -21,6 +21,8 @@ struct MessageItem: Identifiable {
     let timestamp: Date
     var sender: UserItem?
     var videoUrl: String?
+    var audioUrl: String?
+    var audioDuration: TimeInterval?
     
     /// change direction from constant to a computed property
 //    let direction: MessageDirection
@@ -84,14 +86,16 @@ extension MessageItem {
         self.isGroupChat = isGroupChat
         self.text = dict[.text] as? String ?? ""
         self.thumbnailUrl = dict[.thumbnailUrl] as? String ?? nil
-        self.thumbnailWidth = dict[.thumbnailWidth] as? CGFloat ?? 0
-        self.thumbnailHeight = dict[.thumbnailHeight] as? CGFloat ?? 0
+        self.thumbnailWidth = dict[.thumbnailWidth] as? CGFloat ?? nil
+        self.thumbnailHeight = dict[.thumbnailHeight] as? CGFloat ?? nil
         let type = dict[.type] as? String ?? "text"
         self.type = MessageType(type) ?? .text
         self.ownerUid = dict[.ownerUid] as? String ?? ""
         let timestampInterval = dict[.timestamp] as? TimeInterval ?? 0
         self.timestamp = Date(timeIntervalSince1970: timestampInterval)
         self.videoUrl = dict[.videoUrl] as? String ?? nil
+        self.audioUrl = dict[.audioUrl] as? String ?? nil
+        self.audioDuration = dict[.audioDuration] as? TimeInterval ?? nil
     }
 }
 
@@ -103,4 +107,6 @@ extension String {
     static let thumbnailWidth = "thumbnailWidth"
     static let thumbnailHeight = "thumbnailHeight"
     static let videoUrl = "videoUrl"
+    static let audioUrl = "audioUrl"
+    static let audioDuration = "audioDuration"
 }
