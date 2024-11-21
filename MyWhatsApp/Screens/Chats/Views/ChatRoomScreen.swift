@@ -17,6 +17,8 @@ struct ChatRoomScreen: View {
 //    @StateObject private var viewModel = ChatRoomViewModel()
     // ~ We can init like below
     @StateObject private var viewModel: ChatRoomViewModel
+    @StateObject private var voiceMessagePlayer = VoiceMessagePlayer()
+    
     init(channel: ChannelItem) {
         self.channel = channel
         _viewModel = StateObject(wrappedValue: ChatRoomViewModel(channel))
@@ -64,6 +66,9 @@ struct ChatRoomScreen: View {
                     }
                 }
             }
+            /// Inject voiceMessagePlayer into all of ChatRoomScreen
+            /// All of the children view of for example MessageListView is going to be able to access voiceMessagePlayer
+            .environmentObject(voiceMessagePlayer)
     }
     
     private func bottomSafeAreaView() -> some View {
