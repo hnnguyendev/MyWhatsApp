@@ -214,6 +214,7 @@ final class ChatRoomViewModel: ObservableObject {
         /// First off let's break off this retain cycle by passing a weak self
         MessageService.getMessages(for: channel) { [weak self] messages in
             self?.messages = messages
+            self?.scrollToBottom(isAnimated: false)
             print("Messages: \(messages.map { $0.text })")
         }
     }

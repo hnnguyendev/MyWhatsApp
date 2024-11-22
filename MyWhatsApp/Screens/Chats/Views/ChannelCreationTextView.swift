@@ -19,7 +19,7 @@ struct ChannelCreationTextView: View {
             (
                 Text(Image(systemName: "lock.fill"))
                 +
-                Text(" Messages and calls are end-to-end encrypted. No one outside of this chat, not event MyWhatsApp, can read or listen to them.")
+                Text(" Messages and calls are end-to-end encrypted. No one outside of this chat, not even MyWhatsApp, can read or listen to them.")
                 +
                 Text("Learn more")
                     .bold()

@@ -8,10 +8,11 @@
 import Foundation
 import AVFoundation
 
+// VoiceMessagePlayer is an ObservableObject, we can think of it as almost a viewModel, that means we can be able to listen and react to changes in it's properties and this VoiceMessagePlayer we're declaring it as a StateObject inside of our ChatRoomScreen, and this "viewModel" is just responsible for playing voice messages. and all we are doing inside of this 
 final class VoiceMessagePlayer: ObservableObject {
     private var player: AVPlayer?
     private(set) var currentURL: URL?
-    @Published private(set) var playerItem: AVPlayerItem?
+    private var playerItem: AVPlayerItem?
     @Published private(set) var playbackState = PlaybackState.stopped
     @Published private(set) var currentTime = CMTime.zero
     private var currentTimeObserve: Any?
@@ -24,6 +25,7 @@ final class VoiceMessagePlayer: ObservableObject {
         if let currentURL = currentURL, currentURL == url {
             resumePlaying()
         } else {
+            stopAudioPlayer()
             currentURL = url
             let playerItem = AVPlayerItem(url: url)
             self.playerItem = playerItem
