@@ -348,4 +348,10 @@ final class ChatRoomViewModel: ObservableObject {
                 self?.elapsedVoiceMessageTime = elaspedTime
             }.store(in: &subscriptions)
     }
+    
+    func isNewDay(for message: MessageItem, at index: Int) -> Bool {
+        let priorIndex = max(0, (index - 1))
+        let priorMessage = messages[priorIndex]
+        return !message.timestamp.isSameDay(as: priorMessage.timestamp)
+    }
 }

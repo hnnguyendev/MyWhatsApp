@@ -14,6 +14,7 @@ struct UpdatesTabScreen: View {
             List {
                 StatusSectionHeader()
                     .listRowBackground(Color.clear)
+                    .frame(maxWidth: .infinity)
                 
                 StatusSection()
                 
