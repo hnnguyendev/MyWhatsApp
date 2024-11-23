@@ -14,6 +14,7 @@ struct ChannelItem: Identifiable, Hashable {
     var creationDate: Date
     var createdBy: String
     var lastMessage: String
+    let lastMessageType: MessageType
     var lastMessageTimestamp: Date
     var adminUids: [String]
     var memberUids: [String]
@@ -82,7 +83,22 @@ struct ChannelItem: Identifiable, Hashable {
         members.count == membersCount
     }
     
-    static let placeholder = ChannelItem.init(id: "1", creationDate: Date(), createdBy: "", lastMessage: "Hello World!", lastMessageTimestamp: Date(), adminUids: [], memberUids: [], membersCount: 2, members: [])
+    var previewMessage: String {
+        switch lastMessageType {
+        case .admin:
+            return "Newly Created Chat!"
+        case .text:
+            return lastMessage
+        case .photo:
+            return "Photo Message"
+        case .video:
+            return "Video Message"
+        case .audio:
+            return "Voice Message"
+        }
+    }
+    
+    static let placeholder = ChannelItem.init(id: "1", creationDate: Date(), createdBy: "", lastMessage: "Hello World!", lastMessageType: .text, lastMessageTimestamp: Date(), adminUids: [], memberUids: [], membersCount: 2, members: [])
     
 }
 
@@ -94,6 +110,8 @@ extension ChannelItem {
         self.creationDate = Date(timeIntervalSince1970: creationInterval)
         self.createdBy = dict[.createdBy] as? String ?? ""
         self.lastMessage = dict[.lastMessage] as? String ?? ""
+        let msgTypeValue = dict[.lastMessageType] as? String ?? "text"
+        self.lastMessageType = MessageType(msgTypeValue) ?? .text
         let lastMsgTimestampInterval = dict[.lastMessageTimestamp] as? Double ?? 0
         self.lastMessageTimestamp = Date(timeIntervalSince1970: lastMsgTimestampInterval)
         self.adminUids = dict[.adminUids] as? [String] ?? []

@@ -15,7 +15,7 @@ enum AdminMessageType: String {
 }
 
 /// Reason we're not making MessageType of type String becase this MessageType is going to also have admin messages and thoose are not actually string
-enum MessageType {
+enum MessageType: Hashable {
     case admin(_ type: AdminMessageType), text, photo, video, audio
     
     var title: String {
@@ -30,6 +30,21 @@ enum MessageType {
             return "video"
         case .audio:
             return "audio"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .admin:
+            return "megaphone.fill"
+        case .text:
+            return ""
+        case .photo:
+            return "photo.fill"
+        case .video:
+            return "video.fill"
+        case .audio:
+            return "mic.fill"
         }
     }
     

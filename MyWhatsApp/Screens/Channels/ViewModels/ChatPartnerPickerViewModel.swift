@@ -190,6 +190,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
             .creationDate: timestamp,
             .createdBy: currentUid,
             .lastMessage: newChannelBroadcast,
+            .lastMessageType: newChannelBroadcast,
             .lastMessageTimestamp: timestamp,
             .adminUids: [currentUid],
             .memberUids: memberUids,
