@@ -72,8 +72,13 @@ struct NewGroupSetUpScreen: View {
     private func trailingNavItem() -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Create") {
-                /// After complete createGroupChannel trigger onCreate in ChannelsTabScreen
-                viewModel.createGroupChannel(channelName, completion: onCreate)
+                if viewModel.isDirectChannel {
+                    guard let chatPartner = viewModel.selectedChatPartners.first else { return }
+                    viewModel.createDirectChannel(chatPartner, completion: onCreate)
+                } else {
+                    /// After complete createGroupChannel trigger onCreate in ChannelsTabScreen
+                    viewModel.createGroupChannel(channelName, completion: onCreate)
+                }
             }
             .bold()
             .disabled(viewModel.disableNextButton)

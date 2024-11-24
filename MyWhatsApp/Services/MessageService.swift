@@ -119,6 +119,7 @@ struct MessageService {
             messages.sort { $0.timestamp < $1.timestamp }
             
             if messages.count == mainSnapshot.childrenCount {
+                if lastCursor == nil { messages.removeLast() } /// Fix bug duplicate last message first time go into chat room because getMessages then listen get last message
                 let filterMessages = lastCursor == nil ? messages : messages.filter { $0.id != lastCursor }
                 let messageNode = MessageNode(messages: filterMessages, currentCursor: first.key)
                 completion(messageNode)
@@ -149,6 +150,7 @@ struct MessageService {
     
     static func listenForNewMessages(in channel: ChannelItem, completion: @escaping(MessageItem) -> Void) {
         FirebaseConstants.ChannelMessagesRef.child(channel.id)
+            .queryLimited(toLast: 1)
             .observe(.childAdded) { snapshot in
                 guard let messageDict = snapshot.value as? [String: Any] else { return }
                 var newMessage = MessageItem(id: snapshot.key, isGroupChat: channel.isGroupChat, dict: messageDict)

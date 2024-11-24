@@ -46,7 +46,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
         return !users.isEmpty
     }
     
-    private var isDirectChannel: Bool {
+    var isDirectChannel: Bool {
         return selectedChatPartners.count == 1
     }
     
@@ -77,7 +77,7 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     // MARK: - Public Methods
     func fetchUsers() async {
         do {
-            let userNode = try await UserService.paginateUsers(lastCursor: lastCursor, pageSize: 5)
+            let userNode = try await UserService.paginateUsers(lastCursor: lastCursor, pageSize: 12)
             var fetchedUsers = userNode.users
             
             /// Remove the currently loged in user
@@ -118,7 +118,9 @@ final class ChatPartnerPickerViewModel: ObservableObject {
     }
     
     func createDirectChannel(_ chatPartner: UserItem, completion: @escaping (_ newChannel: ChannelItem) -> Void) {
-        selectedChatPartners.append(chatPartner)
+        if selectedChatPartners.isEmpty {
+            selectedChatPartners.append(chatPartner)
+        }
         
         Task {
             // If existing DM, get the channel

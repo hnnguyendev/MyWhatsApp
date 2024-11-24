@@ -73,36 +73,52 @@ final class ChatRoomViewModel: ObservableObject {
     }
     
     func sendMessage() {
-        guard let currentUser else { return }
         if mediaAttachments.isEmpty {
-            /// Create a weak reference because we're inside of a class and we want to make sure that the automatic reference
-            MessageService.sendTextMessage(to: channel, from: currentUser, textMessage) { [weak self] in
-                self?.textMessage = ""
-            }
+            sendTextMessage(textMessage)
         } else {
             sendMultipleMediaMessages(textMessage, attachments: mediaAttachments)
             clearTextInputArea()
         }
     }
     
+    private func sendTextMessage(_ text: String) {
+        guard let currentUser else { return }
+        /// Create a weak reference because we're inside of a class and we want to make sure that the automatic reference
+        MessageService.sendTextMessage(to: channel, from: currentUser, text) { [weak self] in
+            self?.textMessage = ""
+        }
+    }
+    
     private func clearTextInputArea() {
+        textMessage = ""
         mediaAttachments.removeAll()
         photoPickerItems.removeAll()
-        textMessage = ""
         UIApplication.dismissKeyboard()
     }
     
     private func sendMultipleMediaMessages(_ text: String, attachments: [MediaAttachment]) {
-        mediaAttachments.forEach { attachment in
+        /// Fix bug text message in each attachment, just in 1 attachment
+        for (index, attachment) in attachments.enumerated() {
+            let textMessage = index == 0 ? text : ""
             switch attachment.type {
             case .photo:
-                sendPhotoMessage(text: text, attachment)
+                sendPhotoMessage(text: textMessage, attachment)
             case .video:
-                sendVideoMessage(text: text, attachment)
+                sendVideoMessage(text: textMessage, attachment)
             case .audio:
-                sendVoiceMessage(text: text, attachment)
+                sendVoiceMessage(text: textMessage, attachment)
             }
         }
+//        mediaAttachments.forEach { attachment in
+//            switch attachment.type {
+//            case .photo:
+//                sendPhotoMessage(text: text, attachment)
+//            case .video:
+//                sendVideoMessage(text: text, attachment)
+//            case .audio:
+//                sendVoiceMessage(text: text, attachment)
+//            }
+//        }
     }
     
     private func sendPhotoMessage(text: String, _ attachment: MediaAttachment) {
@@ -171,8 +187,12 @@ final class ChatRoomViewModel: ObservableObject {
             )
             
             MessageService.sendMediaMessage(to: self.channel, params: uploadParams) { [weak self] in
-                print("Uploaded Autio to Database")
+                print("Uploaded Audio to Database")
                 self?.scrollToBottom(isAnimated: true)
+            }
+            
+            if !text.isEmptyOrWhiteSpace {
+                self.sendTextMessage(text)
             }
         }
     }
@@ -229,7 +249,7 @@ final class ChatRoomViewModel: ObservableObject {
             /// If it's the initial data pull
             if self?.currentPage == nil {
                 self?.getFirstMessage()
-//                self?.listenForNewMessages()
+                self?.listenForNewMessages()
             }
             
             self?.messages.insert(contentsOf: messageNode.messages, at: 0)
