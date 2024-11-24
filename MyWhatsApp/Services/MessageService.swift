@@ -67,6 +67,7 @@ struct MessageService {
         completion()
     }
     
+    // MARK: /* Deprecated */
     /// This method is very inefficient right now because we're just fetching all the messages on the backend
     /// Need paginate the messages
     static func getMessages(for channel: ChannelItem, completion: @escaping([MessageItem]) -> Void) {
@@ -118,7 +119,8 @@ struct MessageService {
             messages.sort { $0.timestamp < $1.timestamp }
             
             if messages.count == mainSnapshot.childrenCount {
-                let messageNode = MessageNode(messages: messages, currentCursor: first.key)
+                let filterMessages = lastCursor == nil ? messages : messages.filter { $0.id != lastCursor }
+                let messageNode = MessageNode(messages: filterMessages, currentCursor: first.key)
                 completion(messageNode)
             }
         } withCancel: { error in

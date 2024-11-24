@@ -21,6 +21,8 @@ final class ChatRoomViewModel: ObservableObject {
     @Published var isRecordingVoiceMessage = false
     @Published var elapsedVoiceMessageTime: TimeInterval = 0
     @Published var scrollToBottomRequest: (scroll: Bool, isAnimated: Bool) = (false, false)
+    @Published var isPaginating = false
+    private var currentPage: String?
     
     /// We're just going to make this a privately set property but we want to be able to access it outside
     private(set) var channel: ChannelItem
@@ -210,12 +212,23 @@ final class ChatRoomViewModel: ObservableObject {
             
         }
     
-    private func getMessages() {
+    // MARK: /* Deprecated */
+    private func getMessages_() {
         /// First off let's break off this retain cycle by passing a weak self
         MessageService.getMessages(for: channel) { [weak self] messages in
             self?.messages = messages
             self?.scrollToBottom(isAnimated: false)
             print("Messages: \(messages.map { $0.text })")
+        }
+    }
+    
+    func getMessages() {
+        isPaginating = currentPage != nil
+        MessageService.getHistoricalMessages(for: channel, lastCursor: currentPage, pageSize: 12) { [weak self] messageNode in
+            self?.messages.insert(contentsOf: messageNode.messages, at: 0)
+            self?.currentPage = messageNode.currentCursor
+            self?.scrollToBottom(isAnimated: false)
+            self?.isPaginating = false
         }
     }
     
