@@ -101,12 +101,31 @@ final class MessageListController: UIViewController {
         return backgroundImageView
     }()
     
+    private let pullDownHUDView: UIButton = {
+        var buttonConfig = UIButton.Configuration.filled()
+        var imageConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .black)
+        
+        let image = UIImage(systemName: "arrow.up.circle.fill", withConfiguration: imageConfig)
+        buttonConfig.image = image
+        buttonConfig.baseBackgroundColor = .bubbleGreen
+        buttonConfig.baseForegroundColor = .whatsAppBlack
+        buttonConfig.imagePadding = 5
+        buttonConfig.cornerStyle = .capsule
+        let font = UIFont.systemFont(ofSize: 12, weight: .black)
+        buttonConfig.attributedTitle = AttributedString("Pull Down", attributes: AttributeContainer([NSAttributedString.Key.font: font]))
+        let button = UIButton(configuration: buttonConfig)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.alpha = 0
+        return button
+    }()
+    
     // MARK: Methods
     
     // Converting TableView to CollectionView
     private func setUpViews() {
         view.addSubview(backgroundImageView)
         view.addSubview(messagesCollectionView)
+        view.addSubview(pullDownHUDView)
         
         NSLayoutConstraint.activate([
             backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -117,7 +136,10 @@ final class MessageListController: UIViewController {
             messagesCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
             messagesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             messagesCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            messagesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            messagesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            pullDownHUDView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            pullDownHUDView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -201,7 +223,7 @@ final class MessageListController: UIViewController {
     
     @objc private func refreshData() {
         lastScrollPosition = viewModel.messages.first?.id
-        viewModel.getMessages()
+        viewModel.paginateMoreMessages()
     }
 }
 
@@ -244,6 +266,14 @@ extension MessageListController: UICollectionViewDelegate, UICollectionViewDataS
             viewModel.showMediPlayer(videoUrl)
         default:
             break
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y <= 0 {
+            pullDownHUDView.alpha = viewModel.isPaginatable ? 1 : 0
+        } else {
+            pullDownHUDView.alpha = 0
         }
     }
     
