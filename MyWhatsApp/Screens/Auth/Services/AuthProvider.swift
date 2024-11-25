@@ -123,8 +123,8 @@ extension AuthManager {
     
     private func fetchCurrentUserInfo() {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
-        FirebaseConstants.UsersRef.child(currentUid).observe(.value) {[weak self] snapshot in /// Create weak reference???
-            
+        /// Change observe to observeSingleEvent: this is no longer going to be actively listening to the user node
+        FirebaseConstants.UsersRef.child(currentUid).observeSingleEvent(of: .value) {[weak self] snapshot in /// Create weak reference???
             /// decode user from Firebase
             guard let userDict = snapshot.value as? [String: Any] else { return }
             let loggedInUser = UserItem(dictionary: userDict)

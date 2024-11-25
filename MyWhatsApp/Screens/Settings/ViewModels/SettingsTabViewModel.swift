@@ -18,15 +18,23 @@ final class SettingsTabViewModel: ObservableObject {
     @Published var profilePhoto: MediaAttachment?
     @Published var showProgressHUD = false
     @Published var showSuccessHUD = false
+    @Published var showUserInfoEditor = false
+    @Published var username = ""
+    @Published var bio = ""
+    
+    private var currentUser: UserItem
     private(set) var progressHUDView = AlertAppleMusic17View(title: "Uploading Profile Photo", subtitle: nil, icon: .spinnerLarge)
     private(set) var successHUDView = AlertAppleMusic17View(title: "Profile Info Updated!", subtitle: nil, icon: .done)
     private var subscription: AnyCancellable?
     
     var disableSaveButton: Bool {
-        return profilePhoto == nil
+        return profilePhoto == nil || showProgressHUD
     }
     
-    init() {
+    init(_ currentUser: UserItem) {
+        self.currentUser = currentUser
+        self.username = currentUser.username
+        self.bio = currentUser.bio ?? ""
         onPhotoPickerSelection()
     }
     
@@ -68,6 +76,8 @@ final class SettingsTabViewModel: ObservableObject {
         FirebaseConstants.UsersRef.child(currentUid).child(.profileImageUrl).setValue(imageURL.absoluteString)
         showProgressHUD = false
         progressHUDView.dismiss()
+        currentUser.profileImageUrl = imageURL.absoluteString
+        AuthManager.shared.authState.send(.loggedIn(currentUser))
         /// Disable save button
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.showSuccessHUD = true
@@ -75,5 +85,21 @@ final class SettingsTabViewModel: ObservableObject {
             self.selectedPhotoItem = nil
         }
         print("onUploadSuccess: \(imageURL.absoluteString)")
+    }
+    
+    func updateUsernameAndBio() {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+        var dict: [String: Any] = [.bio: bio]
+        currentUser.bio = bio
+        
+        if !username.isEmptyOrWhiteSpace {
+            dict[.username] = username
+            currentUser.username = username
+        }
+        
+        FirebaseConstants.UsersRef.child(currentUid).updateChildValues(dict)
+        showSuccessHUD = true
+        /// Refresh our app manually every single time we update our user information
+        AuthManager.shared.authState.send(.loggedIn(currentUser))
     }
 }
