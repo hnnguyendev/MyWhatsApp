@@ -44,6 +44,12 @@ final class MessageListController: UIViewController {
     private let cellIdentifier = "MessageListControllerCells"
     private var lastScrollPosition: String?
     
+    // MARK: Custom Reactions Properties
+    private var startingFrame: CGRect?
+    private var blurView: UIVisualEffectView?
+    private var focusedView: UIView?
+    private var highlightedCell: UICollectionViewCell?
+    
     private lazy var pullToRefresh: UIRefreshControl = {
         let pullToRefresh = UIRefreshControl()
         pullToRefresh.addTarget(self, action: #selector(refreshData), for: .valueChanged)
@@ -256,16 +262,74 @@ extension MessageListController: UICollectionViewDelegate, UICollectionViewDataS
     
     // Converting TableView to CollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        UIApplication.dismissKeyboard()
-        let messageItem = viewModel.messages[indexPath.row]
-        switch messageItem.type {
-        case .video:
-            guard let videoUrlString = messageItem.videoUrl,
-                  let videoUrl = URL(string: videoUrlString)
-            else { return }
-            viewModel.showMediPlayer(videoUrl)
-        default:
-            break
+//        UIApplication.dismissKeyboard()
+//        let messageItem = viewModel.messages[indexPath.row]
+//        switch messageItem.type {
+//        case .video:
+//            guard let videoUrlString = messageItem.videoUrl,
+//                  let videoUrl = URL(string: videoUrlString)
+//            else { return }
+//            viewModel.showMediPlayer(videoUrl)
+//        default:
+//            break
+//        }
+        
+        guard let selectedCell = collectionView.cellForItem(at: indexPath) else { return }
+//        selectedCell.backgroundColor = .gray
+        /// 1. Get the position of the item we're selected and store it
+        startingFrame = selectedCell.superview?.convert(selectedCell.frame, to: nil)
+        
+        /// 2. Take a screenshot of the item that we have selected
+        guard let snapshotCell = selectedCell.snapshotView(afterScreenUpdates: false) else { return }
+        
+        /// focusedView is sort of like a container that helps us animate the screenshot that we just took
+        focusedView = UIView(frame: startingFrame ?? .zero)
+        guard let focusedView else { return }
+        focusedView.isUserInteractionEnabled = false
+//        focusedView.backgroundColor = .systemMint
+        
+        /// 3. Set up tapGesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissContextMenu))
+        
+        /// 4. Set up blurView
+        let blurEffect = UIBlurEffect(style: .regular)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        guard let blurView else { return }
+        blurView.contentView.isUserInteractionEnabled = true
+        blurView.contentView.addGestureRecognizer(tapGesture)
+        blurView.alpha = 0
+        highlightedCell = selectedCell
+        highlightedCell?.alpha = 0
+        
+        guard let keyWindow = UIWindowScene.current?.keyWindow else { return }
+        keyWindow.addSubview(blurView)
+        keyWindow.addSubview(focusedView)
+        focusedView.addSubview(snapshotCell)
+        /// 5. blurView frame
+        blurView.frame = keyWindow.frame
+        
+        /// 6. Animate the position of the focusedView, focusedView is sort of like a container that helps us animate the screenshot that we just took
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1, options: .curveEaseOut) {
+            blurView.alpha = 1
+            focusedView.center.y = keyWindow.center.y
+            snapshotCell.frame = focusedView.bounds
+        }
+    }
+    
+    @objc private func dismissContextMenu() {
+        UIView.animate(withDuration: 0.6, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .curveEaseIn) { [weak self] in
+            guard let self = self else { return }
+            focusedView?.frame = startingFrame ?? .zero
+            blurView?.alpha = 0
+        } completion: { [weak self] _ in
+            self?.highlightedCell?.alpha = 1
+            self?.blurView?.removeFromSuperview()
+            self?.focusedView?.removeFromSuperview()
+            
+            /// Clearing References
+            self?.highlightedCell = nil
+            self?.blurView = nil
+            self?.focusedView = nil
         }
     }
     
