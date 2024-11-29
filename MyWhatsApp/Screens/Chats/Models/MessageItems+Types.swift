@@ -48,6 +48,14 @@ enum MessageType: Hashable {
         }
     }
     
+    var isAdminMessage: Bool {
+        if case .admin = self {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     init?(_ stringValue: String) {
         switch stringValue {
         case .text:
