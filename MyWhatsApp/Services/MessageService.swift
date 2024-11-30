@@ -159,6 +159,44 @@ struct MessageService {
                 completion(newMessage)
             }
     }
+    
+    static func addReaction(_ reaction: Reaction,
+                            to message: MessageItem,
+                            in channel: ChannelItem,
+                            from currentUser: UserItem,
+                            completion: @escaping(_ emojiCount: Int) -> Void) {
+        /// Increment emoji reactions count
+        let reactionRef = FirebaseConstants.ChannelMessagesRef
+            .child(channel.id)
+            .child(message.id)
+            .child("reactions")
+            .child(reaction.emoji)
+        
+        increaseCountViaTransaction(at: reactionRef) { emojiCount in
+            /// Add current user emoji to userReactions node
+            FirebaseConstants.ChannelMessagesRef
+                .child(channel.id)
+                .child(message.id)
+                .child("userReactions")
+                .child(currentUser.uid)
+                .setValue(reaction.emoji)
+            
+            completion(emojiCount)
+        }
+    }
+    
+    static func increaseCountViaTransaction(at ref: DatabaseReference, completion: ((Int) -> Void)? = nil) {
+        ref.runTransactionBlock { currentData in
+            if var count = currentData.value as? Int {
+                count += 1
+                currentData.value = count
+            } else {
+                currentData.value = 1
+            }
+            completion?(currentData.value as? Int ?? 0)
+            return TransactionResult.success(withValue: currentData)
+        }
+    }
 }
 
 struct MessageUploadParams {
