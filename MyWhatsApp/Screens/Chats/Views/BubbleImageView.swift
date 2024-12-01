@@ -24,9 +24,10 @@ struct BubbleImageView: View {
             
             messageImageView()
                 .shadow(color: Color(.systemGray3).opacity(0.1), radius: 5, x: 0, y: 20)
-                .overlay {
-                    playButton()
-                        .opacity(item.type == .video ? 1 : 0)
+                .overlay(alignment: item.reactionAnchor) {
+                    MessageReactionView(message: item)
+                        .padding(12)
+                        .padding(.bottom, -20)
                 }
             
 //            HStack {
@@ -91,6 +92,10 @@ struct BubbleImageView: View {
                 .overlay(alignment: .bottomTrailing) {
                     timestampTextView()
                 }
+                .overlay {
+                    playButton()
+                        .opacity(item.type == .video ? 1 : 0)
+                }
             
             if !item.text.isEmptyOrWhiteSpace {
                 Text(item.text)
@@ -106,7 +111,7 @@ struct BubbleImageView: View {
     
     private func timestampTextView() -> some View {
         HStack {
-            Text("9:16 PM")
+            Text(item.timestamp.formatToTime)
                 .font(.system(size: 13))
             
             if item.direction == .sent {
