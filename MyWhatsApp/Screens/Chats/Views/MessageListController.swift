@@ -370,6 +370,9 @@ extension MessageListController {
         guard message.type.isAdminMessage == false else { return }
         
         guard let selectedCell = messagesCollectionView.cellForItem(at: indexPath) else { return }
+        
+        Haptic.impact(.medium)
+        
 //        selectedCell.backgroundColor = .gray
         /// 1. Get the position of the item we're selected and store it
         startingFrame = selectedCell.superview?.convert(selectedCell.frame, to: nil)

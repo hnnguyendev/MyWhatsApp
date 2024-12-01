@@ -26,6 +26,7 @@ struct BubbleView: View {
             
             composeDynamicBubbleView()
         }
+        .padding(.bottom, message.hasReaction ? 8 : 0)
     }
     
     @ViewBuilder
