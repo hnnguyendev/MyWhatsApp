@@ -1,19 +1,48 @@
-Channel (have a list of metadata and data)
-	channelId: Random String
-	admins: [uid, uid, uid, ...]
-	members: [uid, uid, uid, uid, ...]
-	creationDate: TimeInterval
-	membersCount: Int
+users
+	userId
+		uid: String
+		email: String
+		username: String
+		profileImageUrl: String?
+		bio: String?
+
+channels (have a list of metadata and data)
+	channelId
+		id: String
+		name: String?
+		creationDate: Date
+		createdBy: String
+		lastMessage: String
+		lastMessageType: MessageType
+		lastMessageTimestamp: Date
+		adminUids: [String]
+		memberUids: [String]
+		membersCount: Int
 	
-Channel-Messages
+user-channels
+	userId
+		channelId: true
+
+channel-messages
 	channelId
 		messageId
-			message: { text, timestamp, sender, … }
+			text: String
+			thumbnailUrl: String?
+			thumbnailWidth: CGFloat?
+			thumbnailHeight: CGFloat?
+			type: MessageType
+			ownerUid: String
+			timestamp: Date
+			videoUrl: String?
+			audioUrl: String?
+			audioDuration: TimeInterval?
+			reactions: [emoji: emojiCount]
+			userReactions: [userId: emoji]
 
-User-Direct-Messages
-	userId
-		channelId1: true
-		channelId2: true
+user-direct-channels
+	userId1
+		userId2
+			channelId: true
 	
 Direct Channels: unique, 1:1 communication with just 2 members
 Group Channels: non-unique, 3 to 12 members
