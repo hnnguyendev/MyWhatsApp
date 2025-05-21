@@ -1,0 +1,51 @@
+users
+	userId
+		uid: String
+		email: String
+		username: String
+		profileImageUrl: String?
+		bio: String?
+
+channels (have a list of metadata and data)
+	channelId
+		id: String
+		name: String?
+		creationDate: Date
+		createdBy: String
+		lastMessage: String
+		lastMessageType: MessageType
+		lastMessageTimestamp: Date
+		adminUids: [String]
+		memberUids: [String]
+		membersCount: Int
+	
+user-channels
+	userId
+		channelId: true
+
+channel-messages
+	channelId
+		messageId
+			text: String
+			thumbnailUrl: String?
+			thumbnailWidth: CGFloat?
+			thumbnailHeight: CGFloat?
+			type: MessageType
+			ownerUid: String
+			timestamp: Date
+			videoUrl: String?
+			audioUrl: String?
+			audioDuration: TimeInterval?
+			reactions: [emoji: emojiCount]
+			userReactions: [userId: emoji]
+
+user-direct-channels
+	userId1
+		userId2
+			channelId: true
+	
+Direct Channels: unique, 1:1 communication with just 2 members
+Group Channels: non-unique, 3 to 12 members
+
+- Denormalization (mean: It's okay to have duplicate data so long as it helps us): Optimize for Read operations, sacrificing Write (ưu tiên tốc độ, hi sinh một chút dung lượng)
+- Storage is cheap in Firebase 

@@ -8,36 +8,43 @@
 import SwiftUI
 
 struct MainTabView: View {
-    init() {
+    private let currentUser: UserItem
+    
+    init(_ currentUser: UserItem) {
+        self.currentUser = currentUser /// Dependency Injection
         makeTabBarOpaque()
+        /// Move MainTabView above MyWhatsAppApp and add this logic - better thumb icon audio slider BubbleAudioView
+        let thumbImage = UIImage(systemName: "circle.fill")
+        UISlider.appearance().setThumbImage(thumbImage, for: .normal)
     }
     
     var body: some View {
         TabView {
-            placeholderItemView("Updates")
+            UpdatesTabScreen()
                 .tabItem {
                     Image(systemName: Tab.updates.icon)
                     Text(Tab.updates.title)
                 }
-            placeholderItemView("Calls")
+            CallsTabScreen()
                 .tabItem {
                     Image(systemName: Tab.calls.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.calls.title)
                 }
-            placeholderItemView("Communities")
+            CommunitiesTabScreen()
                 .tabItem {
                     Image(systemName: Tab.communities.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.communities.title)
                 }
-            placeholderItemView("Chats")
+            ChannelsTabScreen(currentUser)
                 .tabItem {
                     Image(systemName: Tab.chats.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.chats.title)
                 }
-            placeholderItemView("Settings")
+//            placeholderItemView("Settings")
+            SettingsTabScreen(currentUser)
                 .tabItem {
                     Image(systemName: Tab.settings.icon)
-                    Text(Tab.updates.title)
+                    Text(Tab.settings.title)
                 }
         }
     }
@@ -90,5 +97,5 @@ extension MainTabView {
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(.placeholder)
 }
